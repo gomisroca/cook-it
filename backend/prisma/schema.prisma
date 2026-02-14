@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// USER & AUTH
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String?
+  avatarUrl String?
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recipes   Recipe[]
+  favorites Favorite[]
+  likes     Like[]
+  comments  Comment[]
+
+  following Follow[] @relation("Following")
+  followers Follow[] @relation("Followers")
+}
+
+model Follow {
+  id          String @id @default(cuid())
+  followerId  String
+  followingId String
+
+  follower  User @relation("Following", fields: [followerId], references: [id])
+  following User @relation("Followers", fields: [followingId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+}
+
+// RECIPES
+
+model Recipe {
+  id            String      @id @default(cuid())
+  title         String
+  description   String
+  coverImageUrl String?
+  prepTime      Int? // minutes
+  cookingTime   Int? // minutes
+  difficulty    Difficulty?
+  servings      Int?
+  isPublic      Boolean     @default(true)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  ingredients Ingredient[]
+  steps       Step[]
+  tags        RecipeTag[]
+  favorites   Favorite[]
+  likes       Like[]
+  comments    Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+// INGREDIENTS & STEPS
+
+model Ingredient {
+  id       String  @id @default(cuid())
+  name     String
+  quantity Float?
+  unit     String?
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model Step {
+  id          String  @id @default(cuid())
+  order       Int
+  instruction String
+  duration    Int? // minutes
+  imageUrl    String?
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, order])
+}
+
+// TAGS
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+
+  recipes RecipeTag[]
+}
+
+model RecipeTag {
+  recipeId String
+  tagId    String
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, tagId])
+}
+
+// SOCIAL
+
+model Favorite {
+  id String @id @default(cuid())
+
+  userId   String
+  recipeId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
+
+model Like {
+  id String @id @default(cuid())
+
+  userId   String
+  recipeId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
+
+model Comment {
+  id      String @id @default(cuid())
+  content String
+
+  userId   String
+  recipeId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
