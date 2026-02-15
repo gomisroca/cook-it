@@ -7,12 +7,16 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import api, { setAuthToken } from "@/services/api";
+import { get, post, setAuthToken } from "@/services/api";
 
 interface User {
   id: string;
   username: string;
   email: string;
+}
+
+interface LoginPayload {
+  access_token: string;
 }
 
 interface AuthContextType {
@@ -37,20 +41,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (token) {
       setAuthToken(token);
       // Optionally fetch user profile
-      api
-        .get("/auth/me")
-        .then((res) => setUser(res.data))
+      get<User>("/auth/me")
+        .then((res) => setUser(res))
         .catch(() => setUser(null));
     }
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await api.post("/auth/login", { email, password });
-    const token = res.data.access_token;
+    const res = await post<LoginPayload>("/auth/login", {
+      email,
+      password,
+    });
+    const token = res.access_token;
     localStorage.setItem("token", token);
     setAuthToken(token);
-    const profile = await api.get("/auth/me");
-    setUser(profile.data);
+    // const user = await get("/auth/me");
+    // setUser(user);
   };
 
   const register = async (
@@ -58,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     email: string,
     password: string,
   ) => {
-    await api.post("/auth/register", { username, email, password });
+    await post("/auth/register", { username, email, password });
     await login(email, password);
   };
 

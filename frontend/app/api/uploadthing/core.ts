@@ -1,38 +1,25 @@
-import { env } from "@/env";
-import { NextRequest } from "next/server";
+import { post } from "@/services/api";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
 interface JwtValidateResponse {
-  status: "success" | "error";
-  data: {
-    id: string;
-    username: string;
-    role: string;
-    iat: number;
-    exp: number;
-  };
+  id: string;
+  username: string;
+  role: string;
+  iat: number;
+  exp: number;
 }
 
-async function verifyToken(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader) throw new UploadThingError("Unauthorized");
-  const token = authHeader.split(" ")[1];
+async function verifyToken() {
+  const res = await post<JwtValidateResponse>("/auth/validate");
 
-  const res = await fetch(env.NEXT_PUBLIC_BACKEND_URL + "/auth/validate", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  if (!res.id) {
+    throw new UploadThingError("Unauthorized");
+  }
 
-  if (!res.ok) throw new UploadThingError("Unauthorized");
-
-  const { status, data } = (await res.json()) as JwtValidateResponse;
-
-  if (status !== "success" || !data) throw new UploadThingError("Unauthorized");
-
-  return { userId: data.id };
+  return { userId: res.id };
 }
 
 // FileRouter for your app, can contain multiple FileRoutes
@@ -48,8 +35,8 @@ export const UploadThingRouter = {
     },
   })
     // Set permissions and file types for this FileRoute
-    .middleware(async ({ req }) => {
-      return await verifyToken(req);
+    .middleware(async () => {
+      return await verifyToken();
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
@@ -71,8 +58,8 @@ export const UploadThingRouter = {
     },
   })
     // Set permissions and file types for this FileRoute
-    .middleware(async ({ req }) => {
-      return await verifyToken(req);
+    .middleware(async () => {
+      return await verifyToken();
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
@@ -89,8 +76,8 @@ export const UploadThingRouter = {
       maxFileCount: 10,
     },
   })
-    .middleware(async ({ req }) => {
-      return await verifyToken(req);
+    .middleware(async () => {
+      return await verifyToken();
     })
     .onUploadComplete(async ({ metadata, file }) => {
       return { uploadedBy: metadata.userId, url: file.ufsUrl };

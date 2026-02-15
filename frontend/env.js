@@ -11,7 +11,7 @@ export const env = createEnv({
   },
 
   client: {
-    NEXT_PUBLIC_BACKEND_URL: z.url().default("http://localhost:3001"),
+    NEXT_PUBLIC_API_URL: z.url().default("http://localhost:3001"),
   },
 
   runtimeEnv: {
