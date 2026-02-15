@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { NextSSRPlugin as UploadThingSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { UploadThingRouter } from "@/app/api/uploadthing/core";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,6 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <UploadThingSSRPlugin
+          routerConfig={extractRouterConfig(UploadThingRouter)}
+        />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
