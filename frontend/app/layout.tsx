@@ -7,7 +7,7 @@ import { UploadThingRouter } from "@/app/api/uploadthing/core";
 import localFont from "next/font/local";
 
 const titleFont = localFont({
-  src: "./LuckiestGuy.ttf",
+  src: "../public/fonts/LuckiestGuy.ttf",
 });
 
 export const metadata: Metadata = {
@@ -27,13 +27,18 @@ export default function RootLayout({
           routerConfig={extractRouterConfig(UploadThingRouter)}
         />
         <AuthProvider>
-          <div className={titleFont.className}>
-            <h1 className="text-5xl text-red-500 tracking-wide px-5 text-shadow-sm text-shadow-black">
-              Cook It!
-            </h1>
+          <div className="min-h-screen bg-white">
+            <header className="flex items-center justify-between py-4 px-5 sm:px-6 lg:px-8">
+              <h1
+                className={`${titleFont.className} text-5xl text-red-500 tracking-wide text-shadow-sm text-shadow-black -skew-x-6`}
+              >
+                Cook It!
+              </h1>
+            </header>
+            <main className="flex items-center justify-center py-4 px-5 sm:px-6 lg:px-8">
+              {children}
+            </main>
           </div>
-
-          {children}
         </AuthProvider>
       </body>
     </html>
