@@ -1,4 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Headers,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -16,5 +22,15 @@ export class AuthController {
   @Post('login')
   async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('validate')
+  validate(@Headers('Authorization') authHeader: string) {
+    if (!authHeader) throw new UnauthorizedException('No token provided');
+
+    const token = authHeader.split(' ')[1];
+    if (!token) throw new UnauthorizedException('No token provided');
+
+    return this.authService.verifyToken(token);
   }
 }

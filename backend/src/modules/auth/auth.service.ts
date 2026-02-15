@@ -5,6 +5,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@/generated/prisma/client';
+import { JwtUser } from './jwt.interface';
 
 @Injectable()
 export class AuthService {
@@ -35,9 +36,13 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.validateUser(dto.email, dto.password);
-    const payload = { sub: user.id, username: user.username, role: user.role };
+    const payload = { id: user.id, username: user.username, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  verifyToken(token: string): JwtUser {
+    return this.jwtService.verify<JwtUser>(token);
   }
 }
