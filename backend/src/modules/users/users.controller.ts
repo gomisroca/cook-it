@@ -30,15 +30,6 @@ export class UsersController {
   }
 
   /**
-   * GET /users/:id
-   * Returns a single user by ID
-   */
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
-
-  /**
    * GET /users/me
    * Returns the currently authenticated user
    */
@@ -46,5 +37,14 @@ export class UsersController {
   @Get('me')
   getMe(@CurrentUser() user: UserEntity): UserEntity {
     return user;
+  }
+
+  /**
+   * GET /users/:id
+   * Returns a single user by ID
+   */
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
   }
 }
