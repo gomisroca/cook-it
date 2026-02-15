@@ -19,7 +19,7 @@ enum Role {
   ADMIN,
 }
 
-interface JwtPayload {
+export interface JwtPayload {
   id: string;
   username: string;
   email: string;

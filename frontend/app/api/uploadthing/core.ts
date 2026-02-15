@@ -1,25 +1,26 @@
-import { post } from "@/services/api";
+import { JwtPayload } from "@/contexts/AuthContext";
+import { jwtDecode } from "jwt-decode";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
-interface JwtValidateResponse {
-  id: string;
-  username: string;
-  role: string;
-  iat: number;
-  exp: number;
-}
-
 async function verifyToken() {
-  const res = await post<JwtValidateResponse>("/auth/validate");
+  const token = localStorage.getItem("token");
+  if (!token) throw new UploadThingError("Unauthorized: No token");
 
-  if (!res.id) {
-    throw new UploadThingError("Unauthorized");
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+
+    // Check if token is expired
+    if (decoded.exp * 1000 < Date.now()) {
+      throw new UploadThingError("Unauthorized: Token expired");
+    }
+
+    return { userId: decoded.id };
+  } catch {
+    throw new UploadThingError("Unauthorized: Invalid token");
   }
-
-  return { userId: res.id };
 }
 
 // FileRouter for your app, can contain multiple FileRoutes
