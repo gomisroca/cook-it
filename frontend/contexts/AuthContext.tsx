@@ -40,8 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem("token");
     if (token) {
       setAuthToken(token);
-      // Optionally fetch user profile
-      get<User>("/auth/me")
+      get<User>("/users/me")
         .then((res) => setUser(res))
         .catch(() => setUser(null));
     }
@@ -55,8 +54,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = res.access_token;
     localStorage.setItem("token", token);
     setAuthToken(token);
-    // const user = await get("/auth/me");
-    // setUser(user);
+    const user = await get<User>("/users/me");
+    setUser(user);
   };
 
   const register = async (
