@@ -1,3 +1,4 @@
+import { Role } from '@/generated/prisma/enums';
 import { Exclude, Expose } from 'class-transformer';
 
 export class UserEntity {
@@ -11,9 +12,9 @@ export class UserEntity {
   name?: string | null;
 
   @Expose()
-  role: string;
+  role: Role;
 
-  @Expose()
+  @Exclude()
   createdAt: Date;
 
   @Exclude()
