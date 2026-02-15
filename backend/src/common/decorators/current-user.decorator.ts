@@ -1,12 +1,13 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { UserEntity } from '@/modules/users/entities/user.entity';
+import { JwtUser } from '@/modules/auth/jwt.interface';
 
 export const CurrentUser = createParamDecorator<
-  keyof UserEntity | undefined, // input type (optional property name)
-  UserEntity | undefined // return type
->((data, ctx: ExecutionContext): UserEntity | undefined => {
+  keyof JwtUser | undefined,
+  JwtUser | JwtUser[keyof JwtUser]
+>((data, ctx: ExecutionContext): JwtUser | string => {
   const request = ctx.switchToHttp().getRequest<Request>();
-  const user = request.user;
-  return data ? (user?.[data] as UserEntity | undefined) : user;
+  const user = request.user as JwtUser;
+
+  return data ? user[data] : user;
 });

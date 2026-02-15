@@ -1,3 +1,4 @@
+import { JwtUser } from '@/modules/auth/jwt.interface';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
@@ -14,7 +15,7 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) return true;
 
     const req = context.switchToHttp().getRequest<Request>();
-    const user = req.user;
+    const user = req.user as JwtUser;
 
     if (!user) return false;
 
