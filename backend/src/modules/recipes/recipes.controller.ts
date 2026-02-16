@@ -59,16 +59,6 @@ export class RecipesController {
     return new RecipeEntity(recipe);
   }
 
-  // /**
-  //  * GET /recipes/:id
-  //  * Returns a single recipe by ID
-  //  */
-  // @Get(':id')
-  // async findOne(@Param('id') id: string) {
-  //   const recipe = await this.recipesService.findOne(id);
-  //   return new RecipeEntity(recipe);
-  // }
-
   /**
    * PATCH /recipes/:id
    * Updates a recipe by ID

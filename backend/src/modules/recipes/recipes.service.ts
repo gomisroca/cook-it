@@ -129,28 +129,6 @@ export class RecipesService {
     );
   }
 
-  async findById(id: string) {
-    const recipe = await this.prisma.recipe.findUnique({
-      where: { id },
-      include: {
-        ingredients: true,
-        steps: true,
-        tags: { include: { tag: true } },
-        author: true,
-        _count: {
-          select: { likes: true, favorites: true, comments: true },
-        },
-        comments: true,
-      },
-    });
-
-    if (!recipe) {
-      throw new NotFoundException('Recipe not found');
-    }
-
-    return recipe;
-  }
-
   async findBySlug(slug: string) {
     const recipe = await this.prisma.recipe.findUnique({
       where: { slug },
