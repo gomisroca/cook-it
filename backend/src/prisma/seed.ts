@@ -101,6 +101,7 @@ async function main() {
     const recipe = await prisma.recipe.create({
       data: {
         title: r.title,
+        slug: r.title.toLowerCase().replaceAll(' ', '-'),
         description: r.description,
         coverImageUrl: r.coverImageUrl,
         cookingTime: r.cookingTime,
