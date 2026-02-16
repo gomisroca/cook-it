@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:3001
+@token = YOUR_TOKEN
+
+### --------------------------------------------------
+### Create Recipe
+### POST /recipes
+### --------------------------------------------------
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "johndoe",
+    "email": "johndoe@example.com",
+    "password": "password"
+}
+
+### --------------------------------------------------
+### Login
+### POST /auth/login
+### --------------------------------------------------
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "johndoe@example.com",
+    "password": "password"
+}
+
+### --------------------------------------------------
+### Validate JWT
+### GET /auth/validate
+### --------------------------------------------------
+
+GET {{baseUrl}}/auth/validate
+Authorization: Bearer {{token}}

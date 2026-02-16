@@ -1,0 +1,98 @@
+@baseUrl = http://localhost:3001
+@token = YOUR_TOKEN
+
+### --------------------------------------------------
+### Create Recipe
+### POST /recipes
+### --------------------------------------------------
+POST {{baseUrl}}/recipes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Spaghetti Carbonara",
+  "description": "Classic Italian pasta with eggs, cheese and pancetta.",
+  "coverImageUrl": "https://example.com/carbonara.jpg",
+  "prepTime": 15,
+  "cookingTime": 20,
+  "difficulty": "MEDIUM",
+  "servings": 4,
+  "isPublic": true,
+  "ingredients": [
+    { "name": "Spaghetti", "quantity": 400, "unit": "g" },
+    { "name": "Eggs", "quantity": 4 },
+    { "name": "Parmesan Cheese", "quantity": 100, "unit": "g" },
+    { "name": "Pancetta", "quantity": 150, "unit": "g" },
+    { "name": "Black Pepper" }
+  ],
+  "steps": [
+    { "order": 1, "instruction": "Boil salted water and cook spaghetti.", "duration": 10 },
+    { "order": 2, "instruction": "Fry pancetta until crispy.", "duration": 5 },
+    { "order": 3, "instruction": "Whisk eggs and parmesan together." },
+    { "order": 4, "instruction": "Combine everything off heat and mix well." }
+  ],
+  "tags": ["Italian", "Pasta", "Dinner"]
+}
+
+### --------------------------------------------------
+### Get Paginated Recipes
+### GET /recipes
+### --------------------------------------------------
+GET {{baseUrl}}/recipes?take=10
+Authorization: Bearer {{token}}
+
+### --------------------------------------------------
+### Search Recipes
+### GET /recipes?search=spaghetti
+### --------------------------------------------------
+GET {{baseUrl}}/recipes?search=spaghetti&take=5
+Authorization: Bearer {{token}}
+
+### --------------------------------------------------
+### Get Public Recipes Only
+### --------------------------------------------------
+GET {{baseUrl}}/recipes?isPublic=true&take=10
+Authorization: Bearer {{token}}
+
+### --------------------------------------------------
+### Get Recipe By Slug
+### --------------------------------------------------
+@recipeSlug = RECIPE_SLUG
+
+GET {{baseUrl}}/recipes/{{recipeSlug}}
+Authorization: Bearer {{token}}
+
+
+### --------------------------------------------------
+### Update Recipe
+### PATCH /recipes/:id
+### --------------------------------------------------
+@recipeId = RECIPE_ID
+
+PATCH {{baseUrl}}/recipes/{{recipeId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Spaghetti Carbonara Deluxe",
+  "description": "Updated description",
+  "prepTime": 20,
+  "ingredients": [
+    { "name": "Spaghetti", "quantity": 500, "unit": "g" },
+    { "name": "Eggs", "quantity": 5 },
+    { "name": "Parmesan", "quantity": 120, "unit": "g" }
+  ],
+  "steps": [
+    { "order": 1, "instruction": "Cook pasta al dente." },
+    { "order": 2, "instruction": "Mix eggs and cheese." },
+    { "order": 3, "instruction": "Combine and serve immediately." }
+  ],
+  "tags": ["italian", "comfort food"]
+}
+
+### --------------------------------------------------
+### Delete Recipe
+### DELETE /recipes/:id
+### --------------------------------------------------
+DELETE {{baseUrl}}/recipes/{{recipeId}}
+Authorization: Bearer {{token}}
