@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAuth } from "@/contexts/AuthContext";
+import { sileo } from "sileo";
+import { Handshake, Ban } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -25,10 +27,16 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
-      alert("Logged in!");
+      sileo.success({
+        title: "Logged in!",
+        icon: <Handshake className="size-3.5" />,
+      });
     } catch (err) {
       console.error(err);
-      alert("Login failed");
+      sileo.error({
+        title: "Login failed",
+        icon: <Ban className="size-3.5" />,
+      });
     }
   };
 

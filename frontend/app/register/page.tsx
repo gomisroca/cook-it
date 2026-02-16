@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAuth } from "@/contexts/AuthContext";
+import { sileo } from "sileo";
+import { Ban, Handshake } from "lucide-react";
 
 const registerSchema = z.object({
   username: z.string().min(3),
@@ -26,10 +28,16 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       await registerUser(data.username, data.email, data.password);
-      alert("Registered and logged in!");
+      sileo.success({
+        title: "Registered and Logged in!",
+        icon: <Handshake className="size-3.5" />,
+      });
     } catch (err) {
       console.error(err);
-      alert("Registration failed");
+      sileo.error({
+        title: "Registration failed",
+        icon: <Ban className="size-3.5" />,
+      });
     }
   };
 

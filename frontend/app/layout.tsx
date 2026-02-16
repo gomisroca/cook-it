@@ -5,6 +5,7 @@ import { NextSSRPlugin as UploadThingSSRPlugin } from "@uploadthing/react/next-s
 import { extractRouterConfig } from "uploadthing/server";
 import { UploadThingRouter } from "@/app/api/uploadthing/core";
 import localFont from "next/font/local";
+import { Toaster } from "sileo";
 
 const titleFont = localFont({
   src: "../public/fonts/LuckiestGuy.ttf",
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <Toaster position="top-right" />
         <UploadThingSSRPlugin
           routerConfig={extractRouterConfig(UploadThingRouter)}
         />
