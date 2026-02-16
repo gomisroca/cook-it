@@ -96,3 +96,67 @@ Content-Type: application/json
 ### --------------------------------------------------
 DELETE {{baseUrl}}/recipes/{{recipeId}}
 Authorization: Bearer {{token}}
+
+
+### --------------------------------------------------
+### Like Recipe
+### POST /recipes/:id/like
+### --------------------------------------------------
+POST {{baseUrl}}/recipes/{{recipeId}}/like
+Authorization: Bearer {{token}}
+
+### --------------------------------------------------
+### Remove Like
+### DELETE /recipes/:id/like
+### --------------------------------------------------
+DELETE {{baseUrl}}/recipes/{{recipeId}}/like
+Authorization: Bearer {{token}}
+
+
+### --------------------------------------------------
+### Favorite Recipe
+### POST /recipes/:id/favorite
+### --------------------------------------------------
+POST {{baseUrl}}/recipes/{{recipeId}}/favorite
+Authorization: Bearer {{token}}
+
+### --------------------------------------------------
+### Remove Favorite
+### DELETE /recipes/:id/favorite
+### --------------------------------------------------
+DELETE {{baseUrl}}/recipes/{{recipeId}}/favorite
+Authorization: Bearer {{token}}
+
+
+### --------------------------------------------------
+### Add Comment
+### POST /recipes/:id/comment
+### --------------------------------------------------
+POST {{baseUrl}}/recipes/{{recipeId}}/comment
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "This is a comment"
+}
+
+### --------------------------------------------------
+### Update Comment
+### PATCH /recipes/comments/:commentId
+### --------------------------------------------------
+@commentId = cmlp48dqq0000yoind16q0uy7
+
+PATCH {{baseUrl}}/recipes/comments/{{commentId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "This is an updated comment"
+}
+
+### --------------------------------------------------
+### Remove Comment
+### DELETE /recipes/comments/:commentId
+### --------------------------------------------------
+DELETE {{baseUrl}}/recipes/comments/{{commentId}}
+Authorization: Bearer {{token}}

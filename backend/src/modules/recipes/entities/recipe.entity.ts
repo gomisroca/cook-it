@@ -2,6 +2,9 @@ import { UserEntity } from '@/modules/users/entities/user.entity';
 import { Expose, Exclude, Type } from 'class-transformer';
 import { IngredientEntity } from './ingredient.entity';
 import { StepEntity } from './step.entity';
+import { FavoriteEntity } from './favorite.entity';
+import { LikeEntity } from './like.entity';
+import { CommentEntity } from './comment.entity';
 
 export class RecipeEntity {
   @Expose()
@@ -39,6 +42,18 @@ export class RecipeEntity {
 
   @Exclude()
   authorId: string;
+
+  @Expose()
+  @Type(() => FavoriteEntity)
+  favorites: FavoriteEntity[];
+
+  @Expose()
+  @Type(() => LikeEntity)
+  likes: LikeEntity[];
+
+  @Expose()
+  @Type(() => CommentEntity)
+  comments: CommentEntity[];
 
   constructor(partial: Partial<RecipeEntity>) {
     Object.assign(this, partial);

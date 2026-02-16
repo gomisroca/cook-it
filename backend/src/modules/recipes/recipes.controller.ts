@@ -20,6 +20,7 @@ import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { RecipeEntity } from './entities/recipe.entity';
 import { CursorDto } from '@/common/dto/cursor.dto';
 import { SkipTransform } from '@/common/decorators/skip-transform.decorator';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 @UseGuards(AuthGuard)
 @Controller('recipes')
@@ -88,5 +89,76 @@ export class RecipesController {
   @Delete(':id')
   remove(@CurrentUser() user: JwtUser, @Param('id') id: string) {
     return this.recipesService.remove(user.id, id);
+  }
+
+  /**
+   * POST /recipes/:id/like
+   * Adds a like to a recipe
+   */
+  @Post(':id/like')
+  addLike(@CurrentUser() user: JwtUser, @Param('id') id: string) {
+    return this.recipesService.addLike(user.id, id);
+  }
+
+  /**
+   * DELETE /recipes/:id/like
+   * Removes a like from a recipe
+   */
+  @Delete(':id/like')
+  removeLike(@CurrentUser() user: JwtUser, @Param('id') id: string) {
+    return this.recipesService.removeLike(user.id, id);
+  }
+
+  /**
+   * POST /recipes/:id/favorite
+   * Adds a favorite to a recipe
+   */
+  @Post(':id/favorite')
+  addFavorite(@CurrentUser() user: JwtUser, @Param('id') id: string) {
+    return this.recipesService.addFavorite(user.id, id);
+  }
+
+  /**
+   * DELETE /recipes/:id/favorite
+   * Removes a favorite from a recipe
+   */
+  @Delete(':id/favorite')
+  removeFavorite(@CurrentUser() user: JwtUser, @Param('id') id: string) {
+    return this.recipesService.removeFavorite(user.id, id);
+  }
+
+  /**
+   * POST /recipes/:id/comment
+   * Adds a comment to a recipe
+   */
+  @Post(':id/comment')
+  addComment(
+    @CurrentUser() user: JwtUser,
+    @Param('id') id: string,
+    @Body() body: CreateCommentDto,
+  ) {
+    return this.recipesService.addComment(user.id, id, body.content);
+  }
+
+  /**
+   * PATCH /recipes/comments/:commentId
+   * Updates a comment on a recipe
+   */
+  @Patch('/comments/:id')
+  updateComment(
+    @CurrentUser() user: JwtUser,
+    @Param('id') id: string,
+    @Body() body: CreateCommentDto,
+  ) {
+    return this.recipesService.updateComment(user.id, id, body.content);
+  }
+
+  /**
+   * DELETE /recipes/comments/:id
+   * Removes a comment from a recipe
+   */
+  @Delete('/comments/:id')
+  removeComment(@CurrentUser() user: JwtUser, @Param('id') id: string) {
+    return this.recipesService.removeComment(id, user.id);
   }
 }

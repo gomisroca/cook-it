@@ -110,7 +110,15 @@ export class RecipesService {
               },
             }),
           },
-          include: { author: true },
+          include: {
+            ingredients: true,
+            steps: true,
+            tags: { include: { tag: true } },
+            author: true,
+            likes: true,
+            favorites: true,
+            comments: true,
+          },
         },
 
         orderBy: {
@@ -124,7 +132,15 @@ export class RecipesService {
   async findById(id: string) {
     const recipe = await this.prisma.recipe.findUnique({
       where: { id },
-      include: { author: true },
+      include: {
+        ingredients: true,
+        steps: true,
+        tags: { include: { tag: true } },
+        author: true,
+        likes: true,
+        favorites: true,
+        comments: true,
+      },
     });
 
     if (!recipe) {
@@ -142,6 +158,9 @@ export class RecipesService {
         steps: true,
         tags: { include: { tag: true } },
         author: true,
+        likes: true,
+        favorites: true,
+        comments: true,
       },
     });
 
@@ -261,6 +280,59 @@ export class RecipesService {
 
     return this.prisma.recipe.delete({
       where: { id },
+    });
+  }
+
+  async addLike(userId: string, id: string) {
+    return this.prisma.like.create({
+      data: {
+        userId,
+        recipeId: id,
+      },
+    });
+  }
+
+  async removeLike(userId: string, id: string) {
+    return this.prisma.like.delete({
+      where: { userId_recipeId: { userId, recipeId: id } },
+    });
+  }
+
+  async addFavorite(userId: string, id: string) {
+    return this.prisma.favorite.create({
+      data: {
+        userId,
+        recipeId: id,
+      },
+    });
+  }
+
+  async removeFavorite(userId: string, id: string) {
+    return this.prisma.favorite.delete({
+      where: { userId_recipeId: { userId, recipeId: id } },
+    });
+  }
+
+  async addComment(userId: string, recipeId: string, content: string) {
+    return this.prisma.comment.create({
+      data: {
+        userId,
+        recipeId,
+        content,
+      },
+    });
+  }
+
+  async updateComment(userId: string, commentId: string, content: string) {
+    return this.prisma.comment.update({
+      where: { id: commentId, userId },
+      data: { content },
+    });
+  }
+
+  async removeComment(commentId: string, userId: string) {
+    return this.prisma.comment.deleteMany({
+      where: { id: commentId, userId },
     });
   }
 }
