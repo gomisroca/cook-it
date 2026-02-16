@@ -115,9 +115,9 @@ export class RecipesService {
             steps: true,
             tags: { include: { tag: true } },
             author: true,
-            likes: true,
-            favorites: true,
-            comments: true,
+            _count: {
+              select: { likes: true, favorites: true, comments: true },
+            },
           },
         },
 
@@ -137,8 +137,9 @@ export class RecipesService {
         steps: true,
         tags: { include: { tag: true } },
         author: true,
-        likes: true,
-        favorites: true,
+        _count: {
+          select: { likes: true, favorites: true, comments: true },
+        },
         comments: true,
       },
     });
@@ -158,8 +159,9 @@ export class RecipesService {
         steps: true,
         tags: { include: { tag: true } },
         author: true,
-        likes: true,
-        favorites: true,
+        _count: {
+          select: { likes: true, favorites: true, comments: true },
+        },
         comments: true,
       },
     });
