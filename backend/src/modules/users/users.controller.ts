@@ -1,8 +1,8 @@
-import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CursorDto } from '@/common/dto/cursor.dto';
 import { PaginatedQuery } from '@/common/decorators/paginated-query.decorator';
-import { LoggingInterceptor } from '@/common/interceptors/logging.interceptor';
+import { SkipTransform } from '@/common/decorators/skip-transform.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -15,7 +15,7 @@ export class UsersController {
   // @UseGuards(AuthGuard, RolesGuard)
   // @Roles('ADMIN')
   @Get()
-  @UseInterceptors(LoggingInterceptor) // Skip TransformInterceptor
+  @SkipTransform()
   async findAll(@PaginatedQuery() { cursor, take }: CursorDto) {
     return this.usersService.findAll(cursor, take);
   }
