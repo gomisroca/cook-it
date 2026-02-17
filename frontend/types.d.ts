@@ -9,8 +9,13 @@ interface Step {
   id: string;
   order: number;
   instruction: string;
-  duration: number;
+  duration?: number;
   imageUrl?: string;
+}
+
+interface RecipeTag {
+  id: string;
+  name: string;
 }
 
 interface Author {
@@ -27,6 +32,7 @@ interface Recipe {
   description?: string;
   ingredients: Ingredients[];
   steps: Step[];
+  tags: RecipeTag[];
   isPublic: boolean;
   author: Author;
   createdAt: Date;

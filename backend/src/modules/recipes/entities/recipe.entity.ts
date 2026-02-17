@@ -3,6 +3,7 @@ import { Expose, Exclude, Type } from 'class-transformer';
 import { IngredientEntity } from './ingredient.entity';
 import { StepEntity } from './step.entity';
 import { CommentEntity } from './comment.entity';
+import { TagEntity } from './tag.entity';
 
 export class RecipeEntity {
   @Expose()
@@ -27,6 +28,10 @@ export class RecipeEntity {
   @Expose()
   @Type(() => StepEntity)
   steps: StepEntity[];
+
+  @Expose()
+  @Type(() => TagEntity)
+  tags: TagEntity[];
 
   @Expose()
   isPublic: boolean;
@@ -58,14 +63,19 @@ export class RecipeEntity {
   comments: CommentEntity[];
 
   constructor(
-    partial: Partial<RecipeEntity> & {
+    partial: Omit<Partial<RecipeEntity>, 'tags'> & {
       _count?: { likes?: number; favorites?: number; comments?: number };
+      tags?: { tag: { id: string; name: string } }[];
     },
   ) {
-    Object.assign(this, partial);
+    const { tags, ...rest } = partial;
+
+    Object.assign(this, rest);
 
     this.likesCount = partial._count?.likes ?? 0;
     this.favoritesCount = partial._count?.favorites ?? 0;
     this.commentsCount = partial._count?.comments ?? 0;
+
+    this.tags = tags?.map((rt) => new TagEntity(rt.tag)) ?? [];
   }
 }
