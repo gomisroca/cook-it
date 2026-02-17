@@ -158,7 +158,12 @@ export class RecipesService {
   async update(userId: string, id: string, dto: UpdateRecipeDto) {
     const existing = await this.prisma.recipe.findUnique({
       where: { id },
-      select: { authorId: true, title: true },
+      select: {
+        authorId: true,
+        title: true,
+        coverImageUrl: true,
+        steps: { select: { imageUrl: true } },
+      },
     });
 
     if (!existing || existing.authorId !== userId) {
@@ -166,6 +171,26 @@ export class RecipesService {
     }
 
     const { ingredients, steps, tags, ...recipeData } = dto;
+
+    const urlsToDelete: string[] = [];
+
+    if (
+      recipeData.coverImageUrl !== undefined &&
+      existing.coverImageUrl &&
+      existing.coverImageUrl !== recipeData.coverImageUrl
+    ) {
+      urlsToDelete.push(existing.coverImageUrl);
+    }
+
+    if (steps) {
+      const newStepUrls = new Set(steps.map((s) => s.imageUrl).filter(Boolean));
+
+      for (const oldStep of existing.steps) {
+        if (oldStep.imageUrl && !newStepUrls.has(oldStep.imageUrl)) {
+          urlsToDelete.push(oldStep.imageUrl);
+        }
+      }
+    }
 
     const normalizedTags = tags?.map((tag) => tag.trim().toLowerCase());
 
@@ -185,7 +210,7 @@ export class RecipesService {
       slug = await this.generateUniqueSlug(baseSlug);
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       await tx.recipe.update({
         where: { id },
         data: {
@@ -251,12 +276,18 @@ export class RecipesService {
         },
       });
     });
+
+    if (urlsToDelete.length > 0) {
+      await this.uploadthingService.deleteFiles(urlsToDelete);
+    }
+
+    return result;
   }
 
   async remove(userId: string, id: string) {
     const recipe = await this.prisma.recipe.findUnique({
       where: { id },
-      include: { steps: true },
+      include: { steps: { select: { imageUrl: true } } },
     });
 
     if (!recipe || recipe.authorId !== userId) {
