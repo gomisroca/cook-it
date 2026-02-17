@@ -6,13 +6,21 @@ import { UploadButton } from "@uploadthing/react";
 import { UploadThingRouter } from "@/app/api/uploadthing/core";
 import Image from "next/image";
 import { post } from "@/services/api";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { renameFiles } from "@/lib/rename-files";
+import { sileo } from "sileo";
+import { Ban, Check } from "lucide-react";
 
 interface Ingredient {
   name: string;
@@ -70,110 +78,147 @@ export default function CreateRecipeForm() {
   const onSubmit = async (data: RecipeFormData) => {
     try {
       await post("/recipes", data);
-      alert("Recipe created!");
-      router.push("/recipes"); // redirect to recipe listing
+      sileo.success({
+        title: "Recipe created!",
+        icon: <Check className="size-3.5" />,
+      });
+      router.push("/recipes");
     } catch (err) {
       console.error(err);
-      alert("Error creating recipe");
+      sileo.error({
+        title: "Error creating recipe",
+        icon: <Ban className="size-3.5" />,
+      });
     }
   };
 
   if (!token) return null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-4 rounded-md">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="bg-white p-4 rounded-md space-y-4 w-full md:w-fit max-w-full overflow-x-hidden"
+    >
       {/* Title & Slug */}
-      <FieldGroup>
-        <Field>
-          <FieldLabel>Title</FieldLabel>
-          <Input {...register("title")} className="input mt-1 w-full" />
-        </Field>
+      <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel>Title</FieldLabel>
+            <Input {...register("title")} className="input mt-1 w-full" />
+          </Field>
 
-        {/* Description */}
-        <Field>
-          <FieldLabel>Description</FieldLabel>
-          <Textarea {...register("description")} />
-        </Field>
-      </FieldGroup>
+          {/* Description */}
+          <Field>
+            <FieldLabel>Description</FieldLabel>
+            <Textarea {...register("description")} />
+          </Field>
+        </FieldGroup>
+      </FieldSet>
+      <FieldSeparator className="my-2" />
 
       {/* Cover Image */}
-
-      <Field>
-        <FieldLabel>Cover Image</FieldLabel>
-        <Controller
-          control={control}
-          name="coverImageUrl"
-          render={({ field }) => (
-            <UploadButton<UploadThingRouter, "recipeHeaderImage">
-              endpoint="recipeHeaderImage"
-              headers={{
-                Authorization: `Bearer ${token}`,
-              }}
-              onBeforeUploadBegin={(files) => {
-                return renameFiles(files);
-              }}
-              onClientUploadComplete={(res) => {
-                if (res?.[0]?.ufsUrl) field.onChange(res[0].ufsUrl);
-              }}
-            />
+      <FieldSet>
+        <Field>
+          <FieldLabel>Cover Image</FieldLabel>
+          <Controller
+            control={control}
+            name="coverImageUrl"
+            render={({ field }) => (
+              <UploadButton<UploadThingRouter, "recipeHeaderImage">
+                endpoint="recipeHeaderImage"
+                headers={{
+                  Authorization: `Bearer ${token}`,
+                }}
+                onBeforeUploadBegin={(files) => {
+                  return renameFiles(files);
+                }}
+                onClientUploadComplete={(res) => {
+                  if (res?.[0]?.ufsUrl) field.onChange(res[0].ufsUrl);
+                }}
+                appearance={{
+                  button:
+                    "flex flex-col items-center justify-center rounded-md text-xs w-full md:flex-row md:text-sm font-medium transition-colors " +
+                    "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 " +
+                    "h-9 px-4 py-2 " +
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
+                    "disabled:pointer-events-none disabled:opacity-50 " +
+                    "ut-uploading:bg-primary/70 ut-uploading:cursor-not-allowed",
+                  allowedContent: "text-xs text-muted-foreground mt-1",
+                  container: "flex flex-col items-start",
+                }}
+                content={{
+                  button({ ready }) {
+                    if (ready) return <div>Upload Cover Image</div>;
+                    return "Getting ready...";
+                  },
+                }}
+              />
+            )}
+          />
+          {watch("coverImageUrl") && (
+            <div className="w-24 h-fit">
+              <Image
+                src={watch("coverImageUrl") as string}
+                alt="cover"
+                width={100}
+                height={100}
+                className="object-cover rounded mt-1"
+              />
+            </div>
           )}
-        />
-        {watch("coverImageUrl") && (
-          <div className="w-24 h-16">
-            <Image
-              src={watch("coverImageUrl") as string}
-              alt="step"
-              width={100}
-              height={100}
-              className="object-cover rounded mt-1 mx-auto"
-            />
-          </div>
-        )}
-      </Field>
+        </Field>
+      </FieldSet>
+      <FieldSeparator className="my-2" />
 
       {/* Difficulty */}
-      <Field>
-        <FieldLabel>Difficulty</FieldLabel>
-        <select
-          {...register("difficulty")}
-          className={cn(
-            "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-            "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-            "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-          )}
-        >
-          <option value="">Select</option>
-          <option value="EASY">Easy</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="HARD">Hard</option>
-        </select>
-      </Field>
+      <FieldSet>
+        <Field>
+          <FieldLabel>Difficulty</FieldLabel>
+          <select
+            {...register("difficulty")}
+            className={cn(
+              "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+              "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+              "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+            )}
+          >
+            <option value="">Select</option>
+            <option value="EASY">Easy</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HARD">Hard</option>
+          </select>
+        </Field>
+      </FieldSet>
+      <FieldSeparator className="my-2" />
 
       {/* Servings & Time */}
-      <FieldGroup>
-        <Field>
-          <FieldLabel>Servings</FieldLabel>
-          <Input
-            type="number"
-            {...register("servings")}
-            className="input mt-1 w-24"
-          />
-        </Field>
-        <Field>
-          <FieldLabel>Prep Time (min)</FieldLabel>
-          <Input type="number" {...register("prepTime")} />
-        </Field>
-        <Field>
-          <FieldLabel>Cooking Time (min)</FieldLabel>
-          <Input type="number" {...register("cookingTime")} />
-        </Field>
-      </FieldGroup>
+      <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel>Servings</FieldLabel>
+            <Input
+              type="number"
+              {...register("servings")}
+              className="input mt-1 w-24"
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Prep Time (min)</FieldLabel>
+            <Input type="number" {...register("prepTime")} />
+          </Field>
+          <Field>
+            <FieldLabel>Cooking Time (min)</FieldLabel>
+            <Input type="number" {...register("cookingTime")} />
+          </Field>
+        </FieldGroup>
+      </FieldSet>
+      <FieldSeparator className="my-2" />
 
       {/* Ingredients */}
-      <div>
-        <h3 className="font-semibold mb-2">Ingredients</h3>
+      <FieldSet>
+        <FieldLabel>Ingredients</FieldLabel>
         {ingredientFields.map((field, idx) => (
-          <div key={field.id} className="flex gap-2 mb-2">
+          <div key={field.id} className="flex flex-wrap gap-2 mb-2">
             <Input
               {...register(`ingredients.${idx}.name` as const)}
               placeholder="Name"
@@ -190,31 +235,31 @@ export default function CreateRecipeForm() {
               placeholder="Unit"
               className="input w-20"
             />
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={() => removeIngredient(idx)}
-              className="btn-red"
             >
               Remove
-            </button>
+            </Button>
           </div>
         ))}
-        <button
+        <Button
           type="button"
           onClick={() =>
             appendIngredient({ name: "", quantity: undefined, unit: "" })
           }
-          className="btn"
+          className="w-fit"
         >
           Add Ingredient
-        </button>
-      </div>
-
+        </Button>
+      </FieldSet>
+      <FieldSeparator className="my-2" />
       {/* Steps */}
-      <div>
-        <h3 className="font-semibold mb-2">Steps</h3>
+      <FieldSet>
+        <FieldLabel>Steps</FieldLabel>
         {stepFields.map((field, idx) => (
-          <FieldGroup key={field.id} className="flex gap-2 mb-2 items-start">
+          <FieldGroup key={field.id} className="flex-wrap">
             <Field className="flex-1">
               <Input
                 {...register(`steps.${idx}.instruction` as const)}
@@ -244,11 +289,28 @@ export default function CreateRecipeForm() {
                     onClientUploadComplete={(res) => {
                       if (res?.[0]?.ufsUrl) field.onChange(res[0].ufsUrl);
                     }}
+                    appearance={{
+                      button:
+                        "flex flex-col items-center justify-center rounded-md w-full text-xs md:flex-row md:text-sm font-medium transition-colors " +
+                        "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 " +
+                        "h-9 px-4 py-2 " +
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
+                        "disabled:pointer-events-none disabled:opacity-50 " +
+                        "ut-uploading:bg-primary/70 ut-uploading:cursor-not-allowed",
+                      allowedContent: "text-xs text-muted-foreground mt-1",
+                      container: "flex flex-col items-start",
+                    }}
+                    content={{
+                      button({ ready }) {
+                        if (ready) return <div>Upload Step Image</div>;
+                        return "Getting ready...";
+                      },
+                    }}
                   />
                 )}
               />
               {watch(`steps.${idx}.imageUrl`) && (
-                <div className="w-24 h-16">
+                <div className="w-24 h-fit">
                   <Image
                     src={watch(`steps.${idx}.imageUrl`) as string}
                     alt="step"
@@ -274,30 +336,32 @@ export default function CreateRecipeForm() {
               imageUrl: "",
             })
           }
+          className="w-fit"
         >
           Add Step
         </Button>
-      </div>
-
+      </FieldSet>
+      <FieldSeparator className="my-2" />
       {/* Tags */}
-      <Field>
-        <FieldLabel>Tags (comma separated)</FieldLabel>
-        <Controller
-          control={control}
-          name="tags"
-          render={({ field }) => (
-            <Input
-              value={field.value.join(", ")}
-              onChange={(e) =>
-                field.onChange(e.target.value.split(",").map((t) => t.trim()))
-              }
-              className="input mt-1 w-full"
-            />
-          )}
-        />
-      </Field>
+      <FieldSet>
+        <Field>
+          <FieldLabel>Tags (comma separated)</FieldLabel>
+          <Controller
+            control={control}
+            name="tags"
+            render={({ field }) => (
+              <Input
+                value={field.value.join(", ")}
+                onChange={(e) =>
+                  field.onChange(e.target.value.split(",").map((t) => t.trim()))
+                }
+              />
+            )}
+          />
+        </Field>
+      </FieldSet>
 
-      <Button type="submit" className="mt-6">
+      <Button type="submit" className="mt-6 w-full text-lg">
         Create Recipe
       </Button>
     </form>
