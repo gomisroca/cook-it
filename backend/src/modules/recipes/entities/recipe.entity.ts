@@ -12,6 +12,9 @@ export class RecipeEntity {
   title: string;
 
   @Expose()
+  coverImageUrl?: string | null;
+
+  @Expose()
   slug: string;
 
   @Expose()
