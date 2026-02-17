@@ -54,7 +54,7 @@ export default function Navigation() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <div className="fixed top-0 w-full flex items-center justify-between border-b bg-white z-10 px-4 py-3 lg:hidden">
+      <div className="fixed top-0 w-full flex items-center justify-between border-b bg-white z-10 px-4 py-3 xl:hidden">
         <Link href="/">
           <h1
             className={`${titleFont.className}
@@ -83,7 +83,7 @@ export default function Navigation() {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col border-r bg-muted/30 lg:flex">
+      <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col border-r bg-muted/30 xl:flex">
         <header className="flex items-center py-4 px-6">
           <Link href="/">
             <h1
