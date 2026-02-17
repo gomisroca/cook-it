@@ -4,7 +4,7 @@ import * as React from "react";
 import localFont from "next/font/local";
 import Link from "./ui/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LogIn, UserPlus } from "lucide-react";
+import { Menu, X, LogIn, UserPlus, CookingPot } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const titleFont = localFont({
@@ -27,6 +27,12 @@ export default function Navigation() {
       href: "/register",
       icon: UserPlus,
       section: "Account",
+    },
+    {
+      label: "Create",
+      href: "/recipes/create",
+      icon: CookingPot,
+      section: "Recipes",
     },
   ];
 
