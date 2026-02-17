@@ -11,10 +11,14 @@ import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { RecipeEntity } from './entities/recipe.entity';
 import { CursorDto } from '@/common/dto/cursor.dto';
 import slugify from 'slugify';
+import { UploadthingService } from '@/modules/uploadthing/uploadthing.service';
 
 @Injectable()
 export class RecipesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly uploadthingService: UploadthingService,
+  ) {}
 
   private async generateUniqueSlug(baseSlug: string): Promise<string> {
     let slug = baseSlug;
@@ -252,10 +256,20 @@ export class RecipesService {
   async remove(userId: string, id: string) {
     const recipe = await this.prisma.recipe.findUnique({
       where: { id },
+      include: { steps: true },
     });
 
     if (!recipe || recipe.authorId !== userId) {
       throw new ForbiddenException();
+    }
+
+    if (recipe.coverImageUrl) {
+      await this.uploadthingService.deleteFile(recipe.coverImageUrl);
+    }
+    for (const step of recipe.steps) {
+      if (step.imageUrl) {
+        await this.uploadthingService.deleteFile(step.imageUrl);
+      }
     }
 
     return this.prisma.recipe.delete({
