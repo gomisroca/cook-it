@@ -5,8 +5,8 @@ import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
-async function verifyToken() {
-  const token = localStorage.getItem("token");
+async function verifyToken(authHeader: string) {
+  const token = authHeader.split(" ")[1];
   if (!token) throw new UploadThingError("Unauthorized: No token");
 
   try {
@@ -30,8 +30,8 @@ export const UploadThingRouter = {
       maxFileCount: 1,
     },
   })
-    .middleware(async () => {
-      return await verifyToken();
+    .middleware(async ({ req }) => {
+      return await verifyToken(req.headers.get("Authorization")!);
     })
     .onUploadComplete(async ({ metadata, file }) => {
       return { uploadedBy: metadata.userId, url: file.ufsUrl };
@@ -42,8 +42,8 @@ export const UploadThingRouter = {
       maxFileCount: 1,
     },
   })
-    .middleware(async () => {
-      return await verifyToken();
+    .middleware(async ({ req }) => {
+      return await verifyToken(req.headers.get("Authorization")!);
     })
     .onUploadComplete(async ({ metadata, file }) => {
       return { uploadedBy: metadata.userId, url: file.ufsUrl };
@@ -51,11 +51,11 @@ export const UploadThingRouter = {
   recipeStepImage: f({
     image: {
       maxFileSize: "1MB",
-      maxFileCount: 10,
+      maxFileCount: 1,
     },
   })
-    .middleware(async () => {
-      return await verifyToken();
+    .middleware(async ({ req }) => {
+      return await verifyToken(req.headers.get("Authorization")!);
     })
     .onUploadComplete(async ({ metadata, file }) => {
       return { uploadedBy: metadata.userId, url: file.ufsUrl };
