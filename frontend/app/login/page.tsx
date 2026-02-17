@@ -6,15 +6,21 @@ import * as z from "zod";
 import { useAuth } from "@/contexts/AuthContext";
 import { sileo } from "sileo";
 import { Handshake, Ban } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
+import FormError from "@/components/ui/form-error";
 
 const loginSchema = z.object({
   email: z.email(),
-  password: z.string().min(3),
+  password: z.string().min(6),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const router = useRouter();
   const { login } = useAuth();
   const {
     register,
@@ -29,8 +35,10 @@ export default function LoginPage() {
       await login(data.email, data.password);
       sileo.success({
         title: "Logged in!",
+        description: "Redirecting...",
         icon: <Handshake className="size-3.5" />,
       });
+      router.back();
     } catch (err) {
       console.error(err);
       sileo.error({
@@ -43,24 +51,30 @@ export default function LoginPage() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="max-w-md mx-auto mt-10 space-y-4"
+      className="bg-white w-xs md:w-md p-4 rounded-md"
     >
-      <div>
-        <input {...register("email")} placeholder="Email" className="input" />
-        {errors.email && <p>{errors.email.message}</p>}
-      </div>
-      <div>
-        <input
-          {...register("password")}
-          type="password"
-          placeholder="Password"
-          className="input"
-        />
-        {errors.password && <p>{errors.password.message}</p>}
-      </div>
-      <button type="submit" className="btn">
-        Login
-      </button>
+      <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel>Email</FieldLabel>
+            <Input {...register("email")} placeholder="Email" required />
+            {errors.email && <FormError>{errors.email.message}</FormError>}
+          </Field>
+          <Field>
+            <FieldLabel>Password</FieldLabel>
+            <Input
+              {...register("password")}
+              type="password"
+              placeholder="Password"
+              required
+            />
+            {errors.password && (
+              <FormError>{errors.password.message}</FormError>
+            )}
+          </Field>
+        </FieldGroup>
+        <Button type="submit">Login</Button>
+      </FieldSet>
     </form>
   );
 }

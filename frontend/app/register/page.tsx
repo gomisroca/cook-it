@@ -6,6 +6,11 @@ import * as z from "zod";
 import { useAuth } from "@/contexts/AuthContext";
 import { sileo } from "sileo";
 import { Ban, Handshake } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
+import FormError from "@/components/ui/form-error";
 
 const registerSchema = z.object({
   username: z.string().min(3),
@@ -16,6 +21,7 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
+  const router = useRouter();
   const { register: registerUser } = useAuth();
   const {
     register,
@@ -29,9 +35,11 @@ export default function RegisterPage() {
     try {
       await registerUser(data.username, data.email, data.password);
       sileo.success({
-        title: "Registered and Logged in!",
+        title: "Registered!",
+        description: "Logging you in...",
         icon: <Handshake className="size-3.5" />,
       });
+      router.back();
     } catch (err) {
       console.error(err);
       sileo.error({
@@ -44,32 +52,36 @@ export default function RegisterPage() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="max-w-md mx-auto mt-10 space-y-4"
+      className="bg-white w-xs md:w-md p-4 rounded-md"
     >
-      <div>
-        <input
-          {...register("username")}
-          placeholder="Username"
-          className="input"
-        />
-        {errors.username && <p>{errors.username.message}</p>}
-      </div>
-      <div>
-        <input {...register("email")} placeholder="Email" className="input" />
-        {errors.email && <p>{errors.email.message}</p>}
-      </div>
-      <div>
-        <input
-          {...register("password")}
-          type="password"
-          placeholder="Password"
-          className="input"
-        />
-        {errors.password && <p>{errors.password.message}</p>}
-      </div>
-      <button type="submit" className="btn">
-        Register
-      </button>
+      <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel>Username</FieldLabel>
+            <Input {...register("username")} placeholder="Username" />
+            {errors.username && (
+              <FormError>{errors.username.message}</FormError>
+            )}
+          </Field>
+          <Field>
+            <FieldLabel>Email</FieldLabel>
+            <Input {...register("email")} placeholder="Email" />
+            {errors.email && <FormError>{errors.email.message}</FormError>}
+          </Field>
+          <Field>
+            <FieldLabel>Password</FieldLabel>
+            <Input
+              {...register("password")}
+              type="password"
+              placeholder="Password"
+            />
+            {errors.password && (
+              <FormError>{errors.password.message}</FormError>
+            )}
+          </Field>
+        </FieldGroup>
+        <Button type="submit">Register</Button>
+      </FieldSet>
     </form>
   );
 }
