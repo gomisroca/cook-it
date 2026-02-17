@@ -293,14 +293,13 @@ export class RecipesService {
     if (!recipe || recipe.authorId !== userId) {
       throw new ForbiddenException();
     }
+    const urlsToDelete = [
+      recipe.coverImageUrl,
+      ...recipe.steps.map((s) => s.imageUrl),
+    ].filter(Boolean) as string[];
 
-    if (recipe.coverImageUrl) {
-      await this.uploadthingService.deleteFile(recipe.coverImageUrl);
-    }
-    for (const step of recipe.steps) {
-      if (step.imageUrl) {
-        await this.uploadthingService.deleteFile(step.imageUrl);
-      }
+    if (urlsToDelete.length > 0) {
+      await this.uploadthingService.deleteFiles(urlsToDelete);
     }
 
     return this.prisma.recipe.delete({
