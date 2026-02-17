@@ -22,7 +22,6 @@ import { CursorDto } from '@/common/dto/cursor.dto';
 import { SkipTransform } from '@/common/decorators/skip-transform.decorator';
 import { CreateCommentDto } from './dto/create-comment.dto';
 
-@UseGuards(AuthGuard)
 @Controller('recipes')
 export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}
@@ -32,6 +31,7 @@ export class RecipesController {
    * Creates a new recipe
    */
   @Post()
+  @UseGuards(AuthGuard)
   create(@CurrentUser() user: JwtUser, @Body() dto: CreateRecipeDto) {
     return this.recipesService.create(user.id, dto);
   }
@@ -64,6 +64,7 @@ export class RecipesController {
    * Updates a recipe by ID
    */
   @Patch(':id')
+  @UseGuards(AuthGuard)
   update(
     @CurrentUser() user: JwtUser,
     @Param('id') id: string,
@@ -77,6 +78,7 @@ export class RecipesController {
    * Deletes a recipe by ID
    */
   @Delete(':id')
+  @UseGuards(AuthGuard)
   remove(@CurrentUser() user: JwtUser, @Param('id') id: string) {
     return this.recipesService.remove(user.id, id);
   }
