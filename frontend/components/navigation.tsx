@@ -4,7 +4,14 @@ import * as React from "react";
 import localFont from "next/font/local";
 import Link from "./ui/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LogIn, UserPlus, CookingPot } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogIn,
+  UserPlus,
+  CookingPot,
+  ForkKnifeCrossed,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const titleFont = localFont({
@@ -34,6 +41,12 @@ export default function Navigation() {
       icon: CookingPot,
       section: "Recipes",
     },
+    {
+      label: "Browse",
+      href: "/recipes",
+      icon: ForkKnifeCrossed,
+      section: "Recipes",
+    },
   ];
 
   const sections = Array.from(new Set(navItems.map((item) => item.section)));
@@ -41,7 +54,7 @@ export default function Navigation() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <div className="flex items-center justify-between border-b bg-background px-4 py-3 lg:hidden">
+      <div className="fixed top-0 w-full flex items-center justify-between border-b bg-white z-10 px-4 py-3 lg:hidden">
         <Link href="/">
           <h1
             className={`${titleFont.className}
@@ -70,7 +83,7 @@ export default function Navigation() {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="absolute left-0 hidden h-screen w-64 flex-col border-r bg-muted/30 lg:flex">
+      <aside className="fixed left-0 hidden h-screen w-64 flex-col border-r bg-muted/30 lg:flex">
         <header className="flex items-center py-4 px-6">
           <Link href="/">
             <h1
