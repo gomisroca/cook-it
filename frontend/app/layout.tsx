@@ -21,7 +21,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body
+        className="
+            overflow-x-hidden
+            relative
+            min-h-screen 
+            bg-white 
+            bg-[linear-gradient(45deg,#f6f6f6_25%,transparent_25%),linear-gradient(-45deg,#f6f6f6_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#f6f6f6_75%),linear-gradient(-45deg,transparent_75%,#f6f6f6_75%)] 
+            bg-size-[120px_120px] 
+            bg-position-[0_0,0_60px,60px_-60px,-60px_0px]"
+      >
         <Toaster
           position="top-center"
           options={{
@@ -33,20 +42,10 @@ export default function RootLayout({
         />
 
         <AuthProvider>
-          <div
-            className="
-            relative
-            min-h-screen 
-            bg-white 
-            bg-[linear-gradient(45deg,#f6f6f6_25%,transparent_25%),linear-gradient(-45deg,#f6f6f6_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#f6f6f6_75%),linear-gradient(-45deg,transparent_75%,#f6f6f6_75%)] 
-            bg-size-[120px_120px] 
-            bg-position-[0_0,0_60px,60px_-60px,-60px_0px]"
-          >
-            <Navigation />
-            <main className="flex items-center justify-center py-4 px-5 sm:px-6 lg:px-8">
-              {children}
-            </main>
-          </div>
+          <Navigation />
+          <main className="flex items-center justify-center py-4 px-5 sm:px-6 lg:px-8 mt-20 lg:mt-0">
+            {children}
+          </main>
           <div id="modal-root" />
           {modal}
         </AuthProvider>
