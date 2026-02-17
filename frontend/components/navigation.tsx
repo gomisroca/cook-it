@@ -83,7 +83,7 @@ export default function Navigation() {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 hidden h-screen w-64 flex-col border-r bg-muted/30 lg:flex">
+      <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col border-r bg-muted/30 lg:flex">
         <header className="flex items-center py-4 px-6">
           <Link href="/">
             <h1

@@ -97,7 +97,7 @@ export default function CreateRecipeForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white p-4 rounded-md space-y-4 w-full md:w-fit max-w-full overflow-x-hidden"
+      className="rounded-md space-y-4 overflow-x-hidden"
     >
       {/* Title & Slug */}
       <FieldSet>

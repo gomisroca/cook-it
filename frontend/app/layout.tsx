@@ -43,7 +43,7 @@ export default function RootLayout({
 
         <AuthProvider>
           <Navigation />
-          <main className="flex items-center justify-center py-4 px-5 sm:px-6 lg:px-8 mt-20 lg:mt-0">
+          <main className="flex items-center justify-center py-4 px-5 sm:px-6 xl:px-8 mt-26 mb-10 lg:my-10 w-fit bg-white mx-auto rounded-md shadow-sm">
             {children}
           </main>
           <div id="modal-root" />
