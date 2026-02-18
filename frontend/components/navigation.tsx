@@ -13,6 +13,7 @@ import {
   ForkKnifeCrossed,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 const titleFont = localFont({
   src: "../public/fonts/LuckiestGuy.ttf",
@@ -83,36 +84,46 @@ export default function Navigation() {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col border-r bg-muted/30 xl:flex">
-        <header className="flex items-center py-4 px-6">
-          <Link href="/">
-            <h1
-              className={`${titleFont.className}
-                w-fit
-                bg-white border-4 border-black rounded p-4
-                -skew-y-4 -skew-x-6
-                cursor-pointer
-                text-4xl text-red-500 tracking-wide text-shadow-sm text-shadow-black
-                shadow-[6px_6px_0px_black]
-                transition-all duration-150 ease-out
-                active:scale-95
-                active:translate-y-0.5
-                active:shadow-[2px_2px_0px_black]
-              `}
+      <motion.aside
+        onHoverStart={() => setOpen(true)}
+        onHoverEnd={() => setOpen(false)}
+        animate={{ width: open ? 256 : 80 }}
+        transition={{ duration: 0.25 }}
+        className="fixed left-0 top-0 hidden h-screen border-r bg-muted/30 xl:flex flex-col overflow-hidden justify-start"
+      >
+        {/* Logo */}
+        <div className="h-24 flex items-center justify-start">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="text-2xl">🍳</span>
+
+            <motion.span
+              animate={{ opacity: open ? 1 : 0 }}
+              transition={{ duration: 0.15 }}
+              className="text-xl font-bold whitespace-nowrap"
             >
               Cook It!
-            </h1>
+            </motion.span>
           </Link>
-        </header>
+        </div>
 
-        <nav className="mt-6 flex flex-1 flex-col gap-6 px-4">
+        <nav className="flex-1 flex flex-col gap-6 px-2">
           {sections.map((section) => (
-            <div key={section} className="space-y-1">
-              <p className="px-2 text-xs font-semibold uppercase text-muted-foreground">
+            <div key={section} className="space-y-2">
+              {/* Section label */}
+              <motion.p
+                animate={{ opacity: open ? 1 : 0 }}
+                transition={{ duration: 0.15 }}
+                className="text-xs font-semibold uppercase text-muted-foreground px-3"
+              >
                 {section}
-              </p>
+              </motion.p>
 
-              <div className="flex flex-col gap-1">
+              <div
+                className={cn(
+                  "flex flex-col gap-1 items-start",
+                  open && "*:w-full",
+                )}
+              >
                 {navItems
                   .filter((item) => item.section === section)
                   .map((item) => {
@@ -124,12 +135,25 @@ export default function Navigation() {
                         key={item.href}
                         href={item.href}
                         className={cn(
-                          "justify-start gap-2",
-                          active && "bg-accent text-accent-foreground",
+                          "flex items-center rounded-lg py-2 transition-colors ",
+                          open ? "px-3" : "justify-center",
+                          active
+                            ? "bg-accent text-accent-foreground"
+                            : "hover:bg-accent/50",
                         )}
                       >
-                        <Icon className="h-4 w-4" />
-                        {item.label}
+                        <Icon className="h-5 w-5 flex-shrink-0" />
+
+                        <motion.span
+                          animate={{
+                            opacity: open ? 1 : 0,
+                            x: open ? 0 : -8,
+                          }}
+                          transition={{ duration: 0.15 }}
+                          className="ml-3 text-sm whitespace-nowrap"
+                        >
+                          {item.label}
+                        </motion.span>
                       </Link>
                     );
                   })}
@@ -137,7 +161,7 @@ export default function Navigation() {
             </div>
           ))}
         </nav>
-      </aside>
+      </motion.aside>
 
       {/* Mobile Drawer */}
       {open && (
