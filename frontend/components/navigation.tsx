@@ -92,14 +92,20 @@ export default function Navigation() {
         className="fixed left-0 top-0 hidden h-screen border-r bg-muted/30 xl:flex flex-col overflow-hidden justify-start"
       >
         {/* Logo */}
-        <div className="h-24 flex items-center justify-start">
+        <div className="h-24 flex items-center justify-center">
           <Link href="/" className="flex items-center gap-3">
-            <span className="text-2xl">🍳</span>
-
             <motion.span
               animate={{ opacity: open ? 1 : 0 }}
               transition={{ duration: 0.15 }}
-              className="text-xl font-bold whitespace-nowrap"
+              className={`${titleFont.className}
+                w-fit
+                rounded p-4
+                -skew-y-4 -skew-x-6
+                cursor-pointer
+                text-4xl text-red-500 tracking-wide text-shadow-sm text-shadow-black
+                transition-all duration-150 ease-out
+                 whitespace-nowrap
+              `}
             >
               Cook It!
             </motion.span>
