@@ -7,6 +7,7 @@ import { env } from "@/env";
 import { get } from "@/services/api";
 import CookingMode from "./cooking-mode";
 import { IngredientChecklist } from "./ingredient-checklist";
+import { CommentsSection } from "./comments-section";
 
 export default async function RecipePage({
   params,
@@ -14,7 +15,9 @@ export default async function RecipePage({
   params: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const slug = (await params).slug;
-  const recipe = await get<Recipe>(`/recipes/${slug}`);
+  const recipe = await get<Recipe & { comments: RecipeComment[] }>(
+    `/recipes/${slug}`,
+  );
   if (!recipe) return <p>Loading...</p>;
 
   return (
@@ -120,9 +123,9 @@ export default async function RecipePage({
           </div>
         </div>
 
+        <CommentsSection comments={recipe.comments} recipeId={recipe.id} />
         {/* Future sections */}
-        {/* <CommentsSection comments={recipe.comments} recipeId={recipe.id} />
-        <FollowAuthorButton author={recipe.author} /> */}
+        {/* <FollowAuthorButton author={recipe.author} /> */}
       </div>
     </div>
   );

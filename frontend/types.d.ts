@@ -20,8 +20,10 @@ interface RecipeTag {
 
 interface Author {
   id: string;
+  username: string;
   email: string;
   role: "USER" | "ADMIN";
+  avatarUrl?: string;
 }
 
 interface Recipe {
@@ -39,6 +41,13 @@ interface Recipe {
   likesCount: number;
   favoritesCount: number;
   commentsCount: number;
+}
+
+interface RecipeComment {
+  id: string;
+  content: string;
+  createdAt: string;
+  user: Author;
 }
 
 interface PaginatedResponse<T> {
