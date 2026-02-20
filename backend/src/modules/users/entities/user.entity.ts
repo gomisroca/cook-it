@@ -9,7 +9,7 @@ export class UserEntity {
   email: string;
 
   @Expose()
-  name?: string | null;
+  username: string;
 
   @Expose()
   role: Role;
