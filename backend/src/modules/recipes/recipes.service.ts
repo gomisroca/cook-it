@@ -144,7 +144,7 @@ export class RecipesService {
         _count: {
           select: { likes: true, favorites: true, comments: true },
         },
-        comments: true,
+        comments: { include: { user: true } },
       },
     });
 
@@ -344,6 +344,7 @@ export class RecipesService {
         recipeId,
         content,
       },
+      include: { user: true },
     });
   }
 
@@ -351,6 +352,7 @@ export class RecipesService {
     return this.prisma.comment.update({
       where: { id: commentId, userId },
       data: { content },
+      include: { user: true },
     });
   }
 
