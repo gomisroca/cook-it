@@ -192,7 +192,11 @@ export function CommentsSection({
 
                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
                           <span>
-                            {new Date(comment.createdAt).toLocaleDateString()}
+                            {
+                              new Date(comment.createdAt)
+                                .toISOString()
+                                .split("T")[0]
+                            }
                           </span>
 
                           {isOwner && !isEditing && (
