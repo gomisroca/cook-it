@@ -39,6 +39,17 @@ export async function post<T = unknown>(
   return api.post<T>(url, body) as Promise<T>;
 }
 
+export async function patch<T = unknown>(
+  url: string,
+  body?: unknown,
+): Promise<T> {
+  return api.patch<T>(url, body) as Promise<T>;
+}
+
+export async function apiDelete<T = unknown>(url: string): Promise<T> {
+  return api.delete<T>(url) as Promise<T>;
+}
+
 export const setAuthToken = (token: string | null) => {
   if (token) {
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
