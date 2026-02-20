@@ -88,7 +88,9 @@ export class RecipesController {
    * Adds a like to a recipe
    */
   @Post(':id/like')
+  @UseGuards(AuthGuard)
   addLike(@CurrentUser() user: JwtUser, @Param('id') id: string) {
+    console.log(user.id, id);
     return this.recipesService.addLike(user.id, id);
   }
 
@@ -97,6 +99,7 @@ export class RecipesController {
    * Removes a like from a recipe
    */
   @Delete(':id/like')
+  @UseGuards(AuthGuard)
   removeLike(@CurrentUser() user: JwtUser, @Param('id') id: string) {
     return this.recipesService.removeLike(user.id, id);
   }
@@ -106,6 +109,7 @@ export class RecipesController {
    * Adds a favorite to a recipe
    */
   @Post(':id/favorite')
+  @UseGuards(AuthGuard)
   addFavorite(@CurrentUser() user: JwtUser, @Param('id') id: string) {
     return this.recipesService.addFavorite(user.id, id);
   }
@@ -115,6 +119,7 @@ export class RecipesController {
    * Removes a favorite from a recipe
    */
   @Delete(':id/favorite')
+  @UseGuards(AuthGuard)
   removeFavorite(@CurrentUser() user: JwtUser, @Param('id') id: string) {
     return this.recipesService.removeFavorite(user.id, id);
   }
@@ -124,6 +129,7 @@ export class RecipesController {
    * Adds a comment to a recipe
    */
   @Post(':id/comment')
+  @UseGuards(AuthGuard)
   addComment(
     @CurrentUser() user: JwtUser,
     @Param('id') id: string,
@@ -137,6 +143,7 @@ export class RecipesController {
    * Updates a comment on a recipe
    */
   @Patch('/comments/:id')
+  @UseGuards(AuthGuard)
   updateComment(
     @CurrentUser() user: JwtUser,
     @Param('id') id: string,
@@ -150,6 +157,7 @@ export class RecipesController {
    * Removes a comment from a recipe
    */
   @Delete('/comments/:id')
+  @UseGuards(AuthGuard)
   removeComment(@CurrentUser() user: JwtUser, @Param('id') id: string) {
     return this.recipesService.removeComment(id, user.id);
   }
