@@ -6,19 +6,22 @@ import { extractRouterConfig } from "uploadthing/server";
 import { UploadThingRouter } from "@/app/api/uploadthing/core";
 import { Toaster } from "sileo";
 import Navigation from "@/components/navigation";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Cook It!",
   description: "The world's recipes, at your fingertips.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   modal,
 }: Readonly<{
   children: React.ReactNode;
   modal: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -41,7 +44,7 @@ export default function RootLayout({
           routerConfig={extractRouterConfig(UploadThingRouter)}
         />
 
-        <AuthProvider>
+        <AuthProvider user={user}>
           <Navigation />
           <main className="flex items-center justify-center py-4 px-5 sm:px-6 xl:px-8 mt-26 mb-10 xl:my-10 w-fit bg-white mx-auto rounded-md shadow-sm">
             {children}
