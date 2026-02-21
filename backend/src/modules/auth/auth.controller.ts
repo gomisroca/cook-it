@@ -5,7 +5,10 @@ import {
   Headers,
   UnauthorizedException,
   Get,
+  Res,
+  Req,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -19,9 +22,20 @@ export class AuthController {
    * Registers a new user
    */
   @Post('register')
-  async register(@Body() dto: RegisterDto) {
-    const user = await this.authService.register(dto);
-    return { id: user.id, email: user.email, username: user.username };
+  async register(
+    @Body() dto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { access_token, user } = await this.authService.register(dto);
+
+    res.cookie('token', access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 60 * 24, // 1 day,
+    });
+
+    return { user };
   }
 
   /**
@@ -30,8 +44,31 @@ export class AuthController {
    * Returns a JWT token
    */
   @Post('login')
-  async login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { access_token, user } = await this.authService.login(dto);
+
+    res.cookie('token', access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 60 * 24, // 1 day,
+    });
+
+    return { user };
+  }
+
+  /**
+   * GET /auth/logout
+   * Logs out the current user
+   * Deletes the JWT token cookie
+   */
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('token');
+    return { success: true };
   }
 
   /**
@@ -40,10 +77,9 @@ export class AuthController {
    * Returns the decoded token payload
    */
   @Get('validate')
-  validate(@Headers('Authorization') authHeader: string) {
-    if (!authHeader) throw new UnauthorizedException('No token provided');
+  validate(@Req() req: Request) {
+    const token = (req.cookies as Record<string, string>)?.token;
 
-    const token = authHeader.split(' ')[1];
     if (!token) throw new UnauthorizedException('No token provided');
 
     return this.authService.verifyToken(token);

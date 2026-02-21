@@ -14,15 +14,20 @@ export class AuthService {
     private prisma: PrismaService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<User> {
+  async register(dto: RegisterDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         username: dto.username,
         email: dto.email,
         password: hashedPassword,
       },
     });
+    const payload = { id: user.id, username: user.username, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: payload,
+    };
   }
 
   async validateUser(email: string, password: string): Promise<User> {
@@ -39,6 +44,7 @@ export class AuthService {
     const payload = { id: user.id, username: user.username, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
+      user: payload,
     };
   }
 
