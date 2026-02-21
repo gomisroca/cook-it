@@ -23,7 +23,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const {
     register,
     handleSubmit,
@@ -34,7 +34,7 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      const user = await post<User>("/auth/register", {
+      await post<User>("/auth/register", {
         username: data.username,
         email: data.email,
         password: data.password,
@@ -44,12 +44,11 @@ export default function RegisterPage() {
         description: "Logging you in...",
         icon: <Handshake className="size-3.5" />,
       });
-      setUser(user);
+
       router.refresh();
       router.back();
     } catch (err) {
       console.error(err);
-      setUser(null);
       sileo.error({
         title: "Registration failed",
         icon: <Ban className="size-3.5" />,

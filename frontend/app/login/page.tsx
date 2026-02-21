@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import FormError from "@/components/ui/form-error";
 import { post } from "@/services/api";
-import { useAuth } from "@/contexts/AuthContext";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -22,7 +21,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser } = useAuth();
 
   const {
     register,
@@ -34,7 +32,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const user = await post<User>("/auth/login", {
+      await post<User>("/auth/login", {
         email: data.email,
         password: data.password,
       });
@@ -42,12 +40,11 @@ export default function LoginPage() {
         title: "Logged in!",
         icon: <Handshake className="size-3.5" />,
       });
-      setUser(user);
+
       router.refresh();
       router.back();
     } catch (err) {
       console.error(err);
-      setUser(null);
       sileo.error({
         title: "Login failed",
         icon: <Ban className="size-3.5" />,
