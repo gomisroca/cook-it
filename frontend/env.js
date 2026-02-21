@@ -5,6 +5,7 @@ export const env = createEnv({
   server: {
     UPLOADTHING_TOKEN: z.string(),
     UPLOADTHING_CDN: z.string(),
+    JWT_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -18,6 +19,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     UPLOADTHING_CDN: process.env.UPLOADTHING_CDN,
+    JWT_SECRET: process.env.JWT_SECRET,
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
