@@ -18,7 +18,7 @@ interface RecipeTag {
   name: string;
 }
 
-interface Author {
+interface User {
   id: string;
   username: string;
   email: string;
@@ -36,7 +36,7 @@ interface Recipe {
   steps: Step[];
   tags: RecipeTag[];
   isPublic: boolean;
-  author: Author;
+  author: User;
   createdAt: Date;
   likesCount: number;
   favoritesCount: number;
@@ -47,7 +47,7 @@ interface RecipeComment {
   id: string;
   content: string;
   createdAt: string;
-  user: Author;
+  user: User;
 }
 
 interface PaginatedResponse<T> {
