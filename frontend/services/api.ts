@@ -5,6 +5,10 @@ const API_URL = env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 api.interceptors.response.use(
@@ -49,13 +53,5 @@ export async function patch<T = unknown>(
 export async function apiDelete<T = unknown>(url: string): Promise<T> {
   return api.delete<T>(url) as Promise<T>;
 }
-
-export const setAuthToken = (token: string | null) => {
-  if (token) {
-    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    delete api.defaults.headers.common["Authorization"];
-  }
-};
 
 export default api;
