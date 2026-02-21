@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import FormError from "@/components/ui/form-error";
+import { post } from "@/services/api";
 
 const registerSchema = z.object({
   username: z.string().min(3),
@@ -22,7 +23,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register: registerUser } = useAuth();
+  const { user, setUser } = useAuth();
   const {
     register,
     handleSubmit,
@@ -33,21 +34,30 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await registerUser(data.username, data.email, data.password);
+      const user = await post<User>("/auth/register", {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      });
       sileo.success({
         title: "Registered!",
         description: "Logging you in...",
         icon: <Handshake className="size-3.5" />,
       });
+      setUser(user);
+      router.refresh();
       router.back();
     } catch (err) {
       console.error(err);
+      setUser(null);
       sileo.error({
         title: "Registration failed",
         icon: <Ban className="size-3.5" />,
       });
     }
   };
+
+  if (user) return null;
 
   return (
     <form
