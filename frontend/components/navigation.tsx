@@ -3,7 +3,7 @@
 import * as React from "react";
 import localFont from "next/font/local";
 import Link from "./ui/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
   X,
@@ -11,37 +11,56 @@ import {
   UserPlus,
   CookingPot,
   ForkKnifeCrossed,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { post } from "@/services/api";
 
 const titleFont = localFont({
   src: "../public/fonts/LuckiestGuy.ttf",
 });
 
 export default function Navigation() {
+  const router = useRouter();
   const pathname = usePathname();
+  const { user, setUser } = useAuth();
+
   const [open, setOpen] = React.useState(false);
 
   const navItems = [
-    {
-      label: "Login",
-      href: "/login",
-      icon: LogIn,
-      section: "Account",
-    },
-    {
-      label: "Register",
-      href: "/register",
-      icon: UserPlus,
-      section: "Account",
-    },
-    {
-      label: "Create",
-      href: "/recipes/create",
-      icon: CookingPot,
-      section: "Recipes",
-    },
+    ...(user
+      ? [
+          {
+            label: "Logout",
+            href: "#",
+            icon: LogOut,
+            section: "Account",
+            action: "logout",
+          },
+          {
+            label: "Create",
+            href: "/recipes/create",
+            icon: CookingPot,
+            section: "Recipes",
+          },
+        ]
+      : [
+          {
+            label: "Login",
+            href: "/login",
+            icon: LogIn,
+            section: "Account",
+          },
+          {
+            label: "Register",
+            href: "/register",
+            icon: UserPlus,
+            section: "Account",
+          },
+        ]),
+
     {
       label: "Browse",
       href: "/recipes",
@@ -49,6 +68,13 @@ export default function Navigation() {
       section: "Recipes",
     },
   ];
+
+  const handleLogout = async () => {
+    await post("/auth/logout");
+
+    setUser(null);
+    router.refresh();
+  };
 
   const sections = Array.from(new Set(navItems.map((item) => item.section)));
 
@@ -136,12 +162,36 @@ export default function Navigation() {
                     const Icon = item.icon;
                     const active = pathname === item.href;
 
+                    const isLogout = item.action === "logout";
+
+                    if (isLogout) {
+                      return (
+                        <button
+                          key="logout"
+                          onClick={handleLogout}
+                          className={cn(
+                            "cursor-pointer inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                            "text-foreground hover:bg-white/70 hover:text-accent-foreground",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                            "disabled:pointer-events-none disabled:opacity-50",
+                          )}
+                        >
+                          <Icon className="h-5 w-5 flex-shrink-0" />
+                          {open && (
+                            <span className="ml-3 text-sm whitespace-nowrap">
+                              Logout
+                            </span>
+                          )}
+                        </button>
+                      );
+                    }
+
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                          "flex items-center rounded-lg py-2 transition-colors ",
+                          "flex items-center rounded-lg py-2 transition-colors",
                           open ? "px-3" : "justify-center",
                           active
                             ? "bg-accent text-accent-foreground"
@@ -149,17 +199,11 @@ export default function Navigation() {
                         )}
                       >
                         <Icon className="h-5 w-5 flex-shrink-0" />
-
-                        <motion.span
-                          animate={{
-                            opacity: open ? 1 : 0,
-                            x: open ? 0 : -8,
-                          }}
-                          transition={{ duration: 0.15 }}
-                          className="ml-3 text-sm whitespace-nowrap"
-                        >
-                          {item.label}
-                        </motion.span>
+                        {open && (
+                          <span className="ml-3 text-sm whitespace-nowrap">
+                            {item.label}
+                          </span>
+                        )}
                       </Link>
                     );
                   })}
