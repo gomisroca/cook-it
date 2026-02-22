@@ -40,4 +40,37 @@ export class UsersService {
       },
     });
   }
+
+  async followStatus(userId: string, followId: string) {
+    const count = await this.prisma.user.count({
+      where: {
+        id: userId,
+        following: {
+          some: { id: followId },
+        },
+      },
+    });
+
+    return { isFollowing: count > 0 };
+  }
+
+  async follow(userId: string, followId: string) {
+    return this.prisma.follow.create({
+      data: {
+        followerId: userId,
+        followingId: followId,
+      },
+    });
+  }
+
+  async unfollow(userId: string, followId: string) {
+    return this.prisma.follow.delete({
+      where: {
+        followerId_followingId: {
+          followerId: userId,
+          followingId: followId,
+        },
+      },
+    });
+  }
 }
