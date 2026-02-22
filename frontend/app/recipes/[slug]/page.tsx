@@ -4,10 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { env } from "@/env";
-import { get } from "@/services/api";
 import CookingMode from "./cooking-mode";
 import { IngredientChecklist } from "./ingredient-checklist";
 import { CommentsSection } from "./comments-section";
+import FollowButton from "./follow-btn";
+import { get } from "@/services/api-server";
 
 export default async function RecipePage({
   params,
@@ -19,6 +20,10 @@ export default async function RecipePage({
     `/recipes/${slug}`,
   );
   if (!recipe) return <p>Loading...</p>;
+
+  const { isFollowing } = await get<{ isFollowing: boolean }>(
+    `/users/follow-status/${recipe.author.id}`,
+  );
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -46,6 +51,15 @@ export default async function RecipePage({
             <p className="text-muted-foreground text-lg max-w-3xl">
               {recipe.description}
             </p>
+            <span className="flex gap-2 items-center">
+              <p className="text-muted-foreground text-lg max-w-3xl">
+                by {recipe.author.username}
+              </p>
+              <FollowButton
+                authorId={recipe.author.id}
+                initialIsFollowing={isFollowing}
+              />
+            </span>
 
             {/* Stats */}
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
@@ -124,8 +138,6 @@ export default async function RecipePage({
         </div>
 
         <CommentsSection comments={recipe.comments} recipeId={recipe.id} />
-        {/* Future sections */}
-        {/* <FollowAuthorButton author={recipe.author} /> */}
       </div>
     </div>
   );
