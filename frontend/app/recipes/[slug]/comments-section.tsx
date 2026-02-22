@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { sileo } from "sileo";
-import { apiDelete, patch, post } from "@/services/api";
+import { del, patch, post } from "@/services/api-client";
 import { Ban, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -121,7 +121,7 @@ export function CommentsSection({
     setComments((prev) => prev.filter((c) => c.id !== id));
 
     try {
-      await apiDelete(`/recipes/comments/${id}/`);
+      await del(`/recipes/comments/${id}/`);
 
       sileo.success({
         title: "Deleted your comment",

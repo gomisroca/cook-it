@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { post } from "@/services/api";
+import { post } from "@/services/api-client";
 
 const titleFont = localFont({
   src: "../public/fonts/LuckiestGuy.ttf",

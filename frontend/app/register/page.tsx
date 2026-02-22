@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import FormError from "@/components/ui/form-error";
-import { post } from "@/services/api";
+import { post } from "@/services/api-client";
 
 const registerSchema = z.object({
   username: z.string().min(3),

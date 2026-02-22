@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { UploadButton } from "@uploadthing/react";
 import { UploadThingRouter } from "@/app/api/uploadthing/core";
 import Image from "next/image";
-import { post } from "@/services/api";
+import { post } from "@/services/api-client";
 import {
   Field,
   FieldGroup,

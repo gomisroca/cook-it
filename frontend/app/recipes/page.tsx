@@ -1,4 +1,4 @@
-import { get } from "@/services/api";
+import { get } from "@/services/api-server";
 import Link from "next/link";
 
 export default async function RecipeListPage() {
