@@ -42,16 +42,16 @@ export class UsersService {
   }
 
   async followStatus(userId: string, followId: string) {
-    const count = await this.prisma.user.count({
+    const follow = await this.prisma.follow.findUnique({
       where: {
-        id: userId,
-        following: {
-          some: { id: followId },
+        followerId_followingId: {
+          followerId: userId,
+          followingId: followId,
         },
       },
     });
 
-    return { isFollowing: count > 0 };
+    return { isFollowing: !!follow };
   }
 
   async follow(userId: string, followId: string) {
