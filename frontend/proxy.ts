@@ -16,7 +16,7 @@ async function verifyToken(token: string) {
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
@@ -42,5 +42,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: PROTECTED_ROUTES,
+  matcher: ["/recipes/create", "/recipes/:path*/edit"],
 };
