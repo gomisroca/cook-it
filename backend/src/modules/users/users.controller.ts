@@ -46,7 +46,6 @@ export class UsersController {
   @Get('/follow-status/:id')
   @UseGuards(AuthGuard)
   async followStatus(@CurrentUser() user: JwtUser, @Param('id') id: string) {
-    console.log(user.id);
     return this.usersService.followStatus(user.id, id);
   }
 
