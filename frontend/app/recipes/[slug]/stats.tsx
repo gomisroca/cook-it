@@ -33,7 +33,7 @@ export function RecipeStats({
 
   async function handleLike() {
     if (!user) {
-      sileo.info({ title: "You need to be logged in to like recipes" });
+      sileo.info({ title: "Log in to like this recipe" });
       return;
     }
     if (likeLoading) return;
@@ -59,7 +59,7 @@ export function RecipeStats({
 
   async function handleFavorite() {
     if (!user) {
-      sileo.info({ title: "You need to be logged in to favorite recipes" });
+      sileo.info({ title: "Log in to favorite this recipe" });
       return;
     }
     if (favoriteLoading) return;

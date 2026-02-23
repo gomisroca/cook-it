@@ -57,7 +57,7 @@ export function IngredientChecklist({
             </Button>
             {allChecked && (
               <Badge variant="secondary" className="uppercase text-xs">
-                All Ready ✅
+                Ready ✅
               </Badge>
             )}
           </div>
