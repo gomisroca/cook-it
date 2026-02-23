@@ -11,6 +11,15 @@ import FollowButton from "./follow-btn";
 import { get } from "@/services/api-server";
 import { RecipeStats } from "./stats";
 
+interface ExpandedRecipe extends Recipe {
+  comments: RecipeComment[];
+  userStatus?: {
+    isFollowing: boolean;
+    isLiked: boolean;
+    isFavorited: boolean;
+  } | null;
+}
+
 export default async function RecipePage({
   params,
 }: {
@@ -18,16 +27,7 @@ export default async function RecipePage({
 }) {
   const slug = (await params).slug;
 
-  const recipe = await get<
-    Recipe & {
-      comments: RecipeComment[];
-      userStatus?: {
-        isFollowing: boolean;
-        isLiked: boolean;
-        isFavorited: boolean;
-      } | null;
-    }
-  >(`/recipes/${slug}`);
+  const recipe = await get<ExpandedRecipe>(`/recipes/${slug}`);
   if (!recipe) return <p>Loading...</p>;
 
   return (
