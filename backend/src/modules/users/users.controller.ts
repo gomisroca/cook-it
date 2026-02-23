@@ -39,15 +39,6 @@ export class UsersController {
   async findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
-  /**
-   * GET /users/follow-status/:id
-   * Returns the follow status of a user
-   */
-  @Get('/follow-status/:id')
-  @UseGuards(AuthGuard)
-  async followStatus(@CurrentUser() user: JwtUser, @Param('id') id: string) {
-    return this.usersService.followStatus(user.id, id);
-  }
 
   /**
    * POST /users/follow/:id

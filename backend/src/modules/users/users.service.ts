@@ -41,19 +41,6 @@ export class UsersService {
     });
   }
 
-  async followStatus(userId: string, followId: string) {
-    const follow = await this.prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: userId,
-          followingId: followId,
-        },
-      },
-    });
-
-    return { isFollowing: !!follow };
-  }
-
   async follow(userId: string, followId: string) {
     return this.prisma.follow.create({
       data: {
