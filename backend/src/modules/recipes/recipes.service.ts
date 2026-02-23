@@ -133,7 +133,7 @@ export class RecipesService {
     );
   }
 
-  async findBySlug(slug: string) {
+  async findBySlug(slug: string, userId?: string) {
     const recipe = await this.prisma.recipe.findUnique({
       where: { slug },
       include: {
@@ -145,14 +145,38 @@ export class RecipesService {
           select: { likes: true, favorites: true, comments: true },
         },
         comments: { include: { user: true } },
+        ...(userId && {
+          likes: { where: { userId }, select: { userId: true } },
+          favorites: { where: { userId }, select: { userId: true } },
+        }),
       },
     });
 
-    if (!recipe) {
-      throw new NotFoundException('Recipe not found');
+    if (!recipe) throw new NotFoundException('Recipe not found');
+
+    let isFollowing = false;
+    if (userId) {
+      const follow = await this.prisma.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId: userId,
+            followingId: recipe.author.id,
+          },
+        },
+      });
+      isFollowing = !!follow;
     }
 
-    return recipe;
+    return {
+      ...recipe,
+      userStatus: userId
+        ? {
+            isFollowing,
+            isLiked: recipe.likes?.length > 0,
+            isFavorited: recipe.favorites?.length > 0,
+          }
+        : null,
+    };
   }
 
   async update(userId: string, id: string, dto: UpdateRecipeDto) {
@@ -305,6 +329,40 @@ export class RecipesService {
     return this.prisma.recipe.delete({
       where: { id },
     });
+  }
+
+  async userStatus(userId: string, slug: string) {
+    const recipe = await this.prisma.recipe.findUnique({
+      where: { slug },
+      select: {
+        author: { select: { id: true } },
+        likes: {
+          where: { userId },
+          select: { userId: true },
+        },
+        favorites: {
+          where: { userId },
+          select: { userId: true },
+        },
+      },
+    });
+
+    if (!recipe) throw new NotFoundException('Recipe not found');
+
+    const follow = await this.prisma.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: userId,
+          followingId: recipe.author.id,
+        },
+      },
+    });
+
+    return {
+      isFollowing: !!follow,
+      isLiked: recipe.likes.length > 0,
+      isFavorited: recipe.favorites.length > 0,
+    };
   }
 
   async addLike(userId: string, id: string) {

@@ -4,6 +4,7 @@ import { IngredientEntity } from './ingredient.entity';
 import { StepEntity } from './step.entity';
 import { CommentEntity } from './comment.entity';
 import { TagEntity } from './tag.entity';
+import { UserStatusEntity } from './user-status.entity';
 
 export class RecipeEntity {
   @Expose()
@@ -62,10 +63,19 @@ export class RecipeEntity {
   @Type(() => CommentEntity)
   comments: CommentEntity[];
 
+  @Expose()
+  @Type(() => UserStatusEntity)
+  userStatus: UserStatusEntity | null;
+
   constructor(
     partial: Omit<Partial<RecipeEntity>, 'tags'> & {
       _count?: { likes?: number; favorites?: number; comments?: number };
       tags?: { tag: { id: string; name: string } }[];
+      userStatus?: {
+        isFollowing: boolean;
+        isLiked: boolean;
+        isFavorited: boolean;
+      } | null;
     },
   ) {
     const { tags, ...rest } = partial;
@@ -75,7 +85,7 @@ export class RecipeEntity {
     this.likesCount = partial._count?.likes ?? 0;
     this.favoritesCount = partial._count?.favorites ?? 0;
     this.commentsCount = partial._count?.comments ?? 0;
-
     this.tags = tags?.map((rt) => new TagEntity(rt.tag)) ?? [];
+    this.userStatus = partial.userStatus ?? null;
   }
 }

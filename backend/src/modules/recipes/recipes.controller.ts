@@ -19,8 +19,8 @@ import { QueryRecipesDto } from './dto/query-recipes.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { RecipeEntity } from './entities/recipe.entity';
 import { CursorDto } from '@/common/dto/cursor.dto';
-import { SkipTransform } from '@/common/decorators/skip-transform.decorator';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { OptionalAuthGuard } from '@/common/guards/optional-auth.guard';
 
 @Controller('recipes')
 export class RecipesController {
@@ -41,7 +41,6 @@ export class RecipesController {
    * Returns paginated recipes
    */
   @Get()
-  @SkipTransform()
   async findAll(
     @Query() query: QueryRecipesDto,
     @PaginatedQuery() pagination: CursorDto,
@@ -54,8 +53,9 @@ export class RecipesController {
    *  Returns a single recipe by slug
    */
   @Get(':slug')
-  async findBySlug(@Param('slug') slug: string) {
-    const recipe = await this.recipesService.findBySlug(slug);
+  @UseGuards(OptionalAuthGuard)
+  async findBySlug(@Param('slug') slug: string, @CurrentUser() user?: JwtUser) {
+    const recipe = await this.recipesService.findBySlug(slug, user?.id);
     return new RecipeEntity(recipe);
   }
 
