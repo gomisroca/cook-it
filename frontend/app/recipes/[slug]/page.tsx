@@ -9,6 +9,7 @@ import { IngredientChecklist } from "./ingredient-checklist";
 import { CommentsSection } from "./comments-section";
 import FollowButton from "./follow-btn";
 import { get } from "@/services/api-server";
+import { RecipeStats } from "./stats";
 
 export default async function RecipePage({
   params,
@@ -16,14 +17,18 @@ export default async function RecipePage({
   params: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const slug = (await params).slug;
-  const recipe = await get<Recipe & { comments: RecipeComment[] }>(
-    `/recipes/${slug}`,
-  );
-  if (!recipe) return <p>Loading...</p>;
 
-  const { isFollowing } = await get<{ isFollowing: boolean }>(
-    `/users/follow-status/${recipe.author.id}`,
-  );
+  const recipe = await get<
+    Recipe & {
+      comments: RecipeComment[];
+      userStatus?: {
+        isFollowing: boolean;
+        isLiked: boolean;
+        isFavorited: boolean;
+      } | null;
+    }
+  >(`/recipes/${slug}`);
+  if (!recipe) return <p>Loading...</p>;
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -57,16 +62,19 @@ export default async function RecipePage({
               </p>
               <FollowButton
                 authorId={recipe.author.id}
-                initialIsFollowing={isFollowing}
+                initialIsFollowing={recipe.userStatus?.isFavorited ?? false}
               />
             </span>
 
             {/* Stats */}
-            <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-              <span>❤️ {recipe.likesCount}</span>
-              <span>⭐ {recipe.favoritesCount}</span>
-              <span>💬 {recipe.commentsCount}</span>
-            </div>
+            <RecipeStats
+              recipeId={recipe.id}
+              initialLikes={recipe.likesCount}
+              initialFavorites={recipe.favoritesCount}
+              commentsCount={recipe.commentsCount}
+              initiallyLiked={recipe.userStatus?.isLiked ?? false}
+              initiallyFavorited={recipe.userStatus?.isFavorited ?? false}
+            />
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 pt-2">
