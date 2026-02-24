@@ -4,7 +4,6 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     UPLOADTHING_TOKEN: z.string(),
-    UPLOADTHING_CDN: z.string(),
     JWT_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -12,13 +11,14 @@ export const env = createEnv({
   },
 
   client: {
+    NEXT_PUBLIC_UPLOADTHING_CDN: z.string(),
     NEXT_PUBLIC_API_URL: z.url().default("http://localhost:3001"),
   },
 
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_UPLOADTHING_CDN: process.env.NEXT_PUBLIC_UPLOADTHING_CDN,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
-    UPLOADTHING_CDN: process.env.UPLOADTHING_CDN,
     JWT_SECRET: process.env.JWT_SECRET,
   },
 

@@ -6,7 +6,7 @@ const config: import("next").NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: env.UPLOADTHING_CDN || "",
+        hostname: env.NEXT_PUBLIC_UPLOADTHING_CDN || "",
         port: "",
         pathname: "/**",
       },
