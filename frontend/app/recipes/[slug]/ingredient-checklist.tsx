@@ -14,12 +14,11 @@ export function IngredientChecklist({
   ingredients: Recipe["ingredients"];
   recipeId: string;
 }) {
-  const STORAGE_KEY = `ingredient-checklist-${recipeId}`;
 
   const [checked, setChecked] = useState<boolean[]>(() => {
     // Load from localStorage if available
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(`ingredient-checklist-${recipeId}`);
       if (saved) return JSON.parse(saved);
     }
     return new Array(ingredients.length).fill(false);
@@ -27,8 +26,8 @@ export function IngredientChecklist({
 
   // Persist state to localStorage on change
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(checked));
-  }, [checked]);
+    localStorage.setItem(`ingredient-checklist-${recipeId}`, JSON.stringify(checked));
+  }, [checked, recipeId]);
 
   const toggle = (index: number) => {
     setChecked((prev) => {
