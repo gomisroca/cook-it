@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -35,19 +34,19 @@ export default async function RecipePage({
       <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
         {/* Hero Section */}
         <div className="space-y-6">
-          {recipe.coverImageUrl &&
-          recipe.coverImageUrl.includes(env.UPLOADTHING_CDN) ? (
-            <div className="relative w-full h-[400px] rounded-2xl overflow-hidden shadow-lg">
-              <Image
-                src={recipe.coverImageUrl}
-                alt={recipe.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <Skeleton className="w-full h-[400px] rounded-2xl" />
-          )}
+          <div className="relative w-full h-[400px] rounded-2xl overflow-hidden shadow-lg">
+            <Image
+              src={
+                recipe.coverImageUrl &&
+                recipe.coverImageUrl.includes(env.NEXT_PUBLIC_UPLOADTHING_CDN)
+                  ? recipe.coverImageUrl
+                  : "/placeholder-recipe.jpg"
+              }
+              alt={recipe.title}
+              fill
+              className="object-cover"
+            />
+          </div>
 
           <div className="space-y-3">
             <h1 className="text-4xl font-bold tracking-tight">
@@ -127,7 +126,9 @@ export default async function RecipePage({
 
                       {/* Optional Step Image */}
                       {step.imageUrl &&
-                        step.imageUrl.includes(env.UPLOADTHING_CDN) && (
+                        step.imageUrl.includes(
+                          env.NEXT_PUBLIC_UPLOADTHING_CDN,
+                        ) && (
                           <div className="relative w-full h-[250px] rounded-2xl overflow-hidden shadow-lg border  transition-transform duration-300 hover:scale-[1.01]">
                             <Image
                               src={step.imageUrl}
