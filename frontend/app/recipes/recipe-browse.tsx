@@ -78,11 +78,21 @@ export default function RecipeBrowse({ initialData, initialCursor }: Props) {
                   alt={recipe.title}
                   fill
                   sizes="(max-width: 768px) 100vw,
-           (max-width: 1200px) 50vw,
-           33vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  (max-width: 1200px) 50vw,
+                  33vw"
+                  className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu will-change-transform group-hover:scale-110"
                   priority={false}
                 />
+
+                {/* Overlay Stats */}
+                <div className="absolute top-3 right-3 flex flex-col gap-2">
+                  <span className="flex items-center gap-1 rounded-full bg-black/50 px-3 py-1 text-xs font-medium text-white backdrop-blur-md shadow-sm">
+                    ❤️ {recipe.likesCount}
+                  </span>
+                  <span className="flex items-center gap-1 rounded-full bg-black/50 px-3 py-1 text-xs font-medium text-white backdrop-blur-md shadow-sm">
+                    ⭐ {recipe.favoritesCount}
+                  </span>
+                </div>
               </div>
 
               <div className="p-5 space-y-3">
@@ -106,13 +116,6 @@ export default function RecipeBrowse({ initialData, initialCursor }: Props) {
                       {tag.name}
                     </span>
                   ))}
-                </div>
-
-                {/* Stats */}
-                <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
-                  <span>❤️ {recipe.likesCount}</span>
-                  <span>⭐ {recipe.favoritesCount}</span>
-                  <span>💬 {recipe.commentsCount}</span>
                 </div>
               </div>
             </Link>
