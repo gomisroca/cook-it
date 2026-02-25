@@ -96,10 +96,26 @@ export default function RecipeBrowse({ initialData, initialCursor }: Props) {
               </div>
 
               <div className="p-5 space-y-3">
-                {/* Title */}
-                <h2 className="text-lg font-semibold group-hover:underline">
-                  {recipe.title}
-                </h2>
+                <div className="space-y-1">
+                  {/* Title */}
+                  <h2 className="text-lg font-semibold group-hover:underline">
+                    {recipe.title}
+                  </h2>
+
+                  {/* Prep & Cooking Time */}
+                  {(recipe.prepTime || recipe.cookingTime) && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>⏱</span>
+                      {recipe.prepTime && (
+                        <span>{recipe.prepTime} min prep</span>
+                      )}
+                      {recipe.prepTime && recipe.cookingTime && <span>•</span>}
+                      {recipe.cookingTime && (
+                        <span>{recipe.cookingTime} min cook</span>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 {/* Description */}
                 <p className="text-sm text-muted-foreground line-clamp-2">
