@@ -35,6 +35,12 @@ export class RecipeEntity {
   tags: TagEntity[];
 
   @Expose()
+  prepTime?: number | null;
+
+  @Expose()
+  cookingTime?: number | null;
+
+  @Expose()
   isPublic: boolean;
 
   @Expose()

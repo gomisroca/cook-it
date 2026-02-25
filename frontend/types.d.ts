@@ -32,6 +32,8 @@ interface Recipe {
   coverImageUrl?: string;
   slug: string;
   description?: string;
+  prepTime?: number;
+  cookingTime?: number;
   ingredients: Ingredients[];
   steps: Step[];
   tags: RecipeTag[];
