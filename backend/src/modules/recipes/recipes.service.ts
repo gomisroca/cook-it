@@ -112,22 +112,24 @@ export class RecipesService {
               cookingTime: { lte: query.maxCookingTime },
             }),
             ...(query.maxPrepTime && { prepTime: { lte: query.maxPrepTime } }),
-            ...(query.title && {
-              title: { contains: query.title, mode: 'insensitive' },
+            ...(query.search && {
+              title: { contains: query.search, mode: 'insensitive' },
             }),
-            ...(query.ingredient && {
-              ingredients: {
-                some: {
-                  name: { contains: query.ingredient, mode: 'insensitive' },
+            ...(query.ingredients?.length && {
+              AND: query.ingredients.map((ingredient) => ({
+                ingredients: {
+                  some: { name: { contains: ingredient, mode: 'insensitive' } },
                 },
-              },
+              })),
             }),
-            ...(query.tag && {
-              tags: {
-                some: {
-                  tag: { name: { contains: query.tag, mode: 'insensitive' } },
+            ...(query.tags?.length && {
+              AND: query.tags.map((tag) => ({
+                tags: {
+                  some: {
+                    tag: { name: { contains: tag, mode: 'insensitive' } },
+                  },
                 },
-              },
+              })),
             }),
           },
           include: {

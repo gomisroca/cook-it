@@ -5,14 +5,15 @@ import {
   IsEnum,
   IsInt,
   Min,
+  IsArray,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { Difficulty } from '@/generated/prisma/enums';
 
 export class QueryRecipesDto {
   @IsOptional()
   @IsString()
-  title?: string;
+  search?: string;
 
   @IsOptional()
   @IsBoolean()
@@ -23,22 +24,30 @@ export class QueryRecipesDto {
   difficulty?: Difficulty;
 
   @IsOptional()
-  @IsString()
-  ingredient?: string;
+  @IsArray()
+  @IsString({ each: true })
+  @Transform(
+    ({ value }) => (Array.isArray(value) ? value : [value]) as string[],
+  )
+  ingredients?: string[];
 
   @IsOptional()
-  @IsString()
-  tag?: string;
+  @IsArray()
+  @IsString({ each: true })
+  @Transform(
+    ({ value }) => (Array.isArray(value) ? value : [value]) as string[],
+  )
+  tags?: string[];
 
   @IsOptional()
   @IsInt()
   @Min(0)
   @Type(() => Number)
-  maxCookingTime?: number; // minutes
+  maxCookingTime?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
   @Type(() => Number)
-  maxPrepTime?: number; // minutes
+  maxPrepTime?: number;
 }
