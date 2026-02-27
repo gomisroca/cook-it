@@ -49,6 +49,15 @@ export class RecipesController {
   }
 
   /**
+   * GET /recipes/ingredients/suggestions
+   * Returns a list of ingredients that match the search query
+   */
+  @Get('/ingredients/suggestions')
+  async ingredientSuggestions(@Query('search') search: string) {
+    return this.recipesService.ingredientSuggestions(search);
+  }
+
+  /**
    * GET /recipes/:slug
    *  Returns a single recipe by slug
    */

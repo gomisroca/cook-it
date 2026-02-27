@@ -435,4 +435,18 @@ export class RecipesService {
       where: { id: commentId, userId },
     });
   }
+
+  async ingredientSuggestions(search: string) {
+    const ingredients = await this.prisma.ingredient.findMany({
+      where: search
+        ? { name: { contains: search, mode: 'insensitive' } }
+        : undefined,
+      select: { name: true },
+      distinct: ['name'],
+      orderBy: { name: 'asc' },
+      take: 10,
+    });
+
+    return ingredients.map((i) => i.name);
+  }
 }
