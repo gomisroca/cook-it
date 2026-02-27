@@ -107,10 +107,26 @@ export class RecipesService {
         query: {
           where: {
             isPublic: query.isPublic,
-            ...(query.search && {
-              title: {
-                contains: query.search,
-                mode: 'insensitive',
+            ...(query.difficulty && { difficulty: query.difficulty }),
+            ...(query.maxCookingTime && {
+              cookingTime: { lte: query.maxCookingTime },
+            }),
+            ...(query.maxPrepTime && { prepTime: { lte: query.maxPrepTime } }),
+            ...(query.title && {
+              title: { contains: query.title, mode: 'insensitive' },
+            }),
+            ...(query.ingredient && {
+              ingredients: {
+                some: {
+                  name: { contains: query.ingredient, mode: 'insensitive' },
+                },
+              },
+            }),
+            ...(query.tag && {
+              tags: {
+                some: {
+                  tag: { name: { contains: query.tag, mode: 'insensitive' } },
+                },
               },
             }),
           },
