@@ -5,9 +5,10 @@ import { UsersModule } from '@/modules/users/users.module';
 import { RecipesModule } from './modules/recipes/recipes.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, RecipesModule],
+  imports: [PrismaModule, AuthModule, UsersModule, RecipesModule, TagsModule],
   controllers: [],
   providers: [
     {
