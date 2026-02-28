@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import RecipeCard from "@/components/recipe-card";
 import { defaultFilters, RecipeFilters } from "./recipe-filters";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   initialData: Recipe[];
@@ -15,24 +16,36 @@ interface Props {
 
 function buildQuery(filters: RecipeFilters, cursor?: string) {
   const params = new URLSearchParams();
+  if (filters.search) params.set("search", filters.search);
   if (filters.difficulty) params.set("difficulty", filters.difficulty);
   if (filters.maxCookingTime)
     params.set("maxCookingTime", String(filters.maxCookingTime));
   if (filters.maxPrepTime)
     params.set("maxPrepTime", String(filters.maxPrepTime));
-  filters.ingredients.forEach((i) => params.append("ingredients", i));
-  filters.tags.forEach((t) => params.append("tags", t));
+  (filters.ingredients ?? []).forEach((i) => params.append("ingredients", i));
+  (filters.tags ?? []).forEach((t) => params.append("tags", t));
   if (cursor) params.set("cursor", cursor);
   return `/recipes?${params.toString()}`;
 }
 
 export default function RecipeBrowse({ initialData, initialCursor }: Props) {
+  const searchParams = useSearchParams();
+  const search = searchParams.get("search") ?? undefined;
+
+  const [filters, setFilters] = useState<RecipeFilters>({
+    ...defaultFilters,
+    search,
+  });
   const [recipes, setRecipes] = useState(initialData);
   const [cursor, setCursor] = useState<string | undefined>(initialCursor);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState<RecipeFilters>(defaultFilters);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const debouncedFilters = useDebounce(filters, 400);
+
+  // Re-set filters when search param changes
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, search }));
+  }, [search]);
 
   // Re-fetch from scratch when filters change
   useEffect(() => {
