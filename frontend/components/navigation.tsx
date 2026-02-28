@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { post } from "@/services/api-client";
+import { SearchBar } from "./search-bar";
+import { Separator } from "./ui/separator";
 
 const titleFont = localFont({
   src: "../public/fonts/LuckiestGuy.ttf",
@@ -100,7 +102,6 @@ export default function Navigation() {
             Cook It!
           </h1>
         </Link>
-
         <button
           onClick={() => setOpen(true)}
           className="rounded-md border p-2 hover:bg-accent"
@@ -137,7 +138,10 @@ export default function Navigation() {
             </motion.span>
           </Link>
         </div>
-
+        <div className="px-2">
+          <SearchBar expanded={open} />
+        </div>
+        <Separator className="my-2" />
         <nav className="flex-1 flex flex-col gap-6 px-2">
           {sections.map((section) => (
             <div key={section} className="space-y-2">
@@ -233,6 +237,11 @@ export default function Navigation() {
                 <X className="h-5 w-5" />
               </button>
             </div>
+
+            <div className="px-2 mt-2">
+              <SearchBar expanded={open} />
+            </div>
+            <Separator className="my-2" />
 
             <nav className="flex flex-col gap-6 p-4">
               {sections.map((section) => (
