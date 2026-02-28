@@ -8,6 +8,7 @@ import { TagMultiselect } from "@/components/tag-multiselect";
 import { IngredientAutocomplete } from "@/components/ingredient-autocomplete";
 
 export interface RecipeFilters {
+  search?: string;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
   maxCookingTime?: number;
   maxPrepTime?: number;
@@ -34,8 +35,8 @@ export function RecipeFilters({ filters, onChange }: Props) {
     filters.difficulty,
     filters.maxCookingTime,
     filters.maxPrepTime,
-    ...filters.ingredients,
-    ...filters.tags,
+    ...(filters.ingredients ?? []),
+    ...(filters.tags ?? []),
   ].filter(Boolean).length;
 
   function update(partial: Partial<RecipeFilters>) {
