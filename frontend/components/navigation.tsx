@@ -227,9 +227,26 @@ export default function Navigation() {
           />
 
           {/* Drawer */}
-          <div className="absolute left-0 top-0 h-fit w-full  border-r bg-background shadow-lg">
-            <div className="flex items-center justify-between border-b px-4 py-6">
-              <span className="font-semibold">Menu</span>
+          <div className="absolute left-0 top-0 h-fit w-full border-r bg-background shadow-lg">
+            <div className="flex items-center justify-between border-b px-4 py-3">
+              <Link href="/">
+                <h1
+                  className={`${titleFont.className}
+              w-fit
+              bg-white border-4 border-black rounded p-2
+              -skew-y-4 -skew-x-6
+              cursor-pointer
+              text-xl text-red-500 tracking-wide text-shadow-sm text-shadow-black
+              shadow-[4px_4px_0px_black]
+              transition-all duration-150 ease-out
+              active:scale-95
+              active:translate-y-0.5
+              active:shadow-[2px_2px_0px_black]
+            `}
+                >
+                  Cook It!
+                </h1>
+              </Link>
               <button
                 onClick={() => setOpen(false)}
                 className="rounded-md border p-2 hover:bg-accent"
