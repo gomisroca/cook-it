@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import FormError from "@/components/ui/form-error";
 import { post } from "@/services/api-client";
+import Link from "@/components/ui/link";
 
 const registerSchema = z.object({
   username: z.string().min(3),
@@ -89,7 +90,12 @@ export default function RegisterPage() {
             )}
           </Field>
         </FieldGroup>
-        <Button type="submit">Register</Button>
+        <Button type="submit" className="w-full">
+          Register
+        </Button>
+        <p className="text-sm text-center text-muted-foreground">
+          Already a member? <Link href="/login">Log in now</Link>
+        </p>
       </FieldSet>
     </form>
   );
