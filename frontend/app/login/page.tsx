@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import FormError from "@/components/ui/form-error";
 import { post } from "@/services/api-client";
+import Link from "@/components/ui/link";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -77,7 +78,12 @@ export default function LoginPage() {
             )}
           </Field>
         </FieldGroup>
-        <Button type="submit">Login</Button>
+        <Button type="submit" className="w-full">
+          Login
+        </Button>
+        <p className="text-sm text-center text-muted-foreground">
+          Not a member? <Link href="/register">Register now</Link>
+        </p>
       </FieldSet>
     </form>
   );
