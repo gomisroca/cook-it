@@ -4,8 +4,8 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { TagMultiselect } from "@/components/tag-multiselect";
-import { IngredientAutocomplete } from "@/components/ingredient-autocomplete";
+import { TagMultiselect } from "@/app/recipes/tag-multiselect";
+import { IngredientAutocomplete } from "@/app/recipes/ingredient-autocomplete";
 
 export interface RecipeFilters {
   search?: string;
