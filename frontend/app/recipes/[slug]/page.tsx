@@ -9,6 +9,11 @@ import { CommentsSection } from "./comments-section";
 import FollowButton from "./follow-btn";
 import { get } from "@/services/api-server";
 import { RecipeStats } from "./stats";
+import { getCurrentUser } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Pencil } from "lucide-react";
+import DeleteButton from "./delete-btn";
 
 interface ExpandedRecipe extends Recipe {
   comments: RecipeComment[];
@@ -25,9 +30,12 @@ export default async function RecipePage({
   params: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const slug = (await params).slug;
+  const user = await getCurrentUser();
 
   const recipe = await get<ExpandedRecipe>(`/recipes/${slug}`);
   if (!recipe) return <p>Loading...</p>;
+
+  const isAuthor = user?.id === recipe.author.id;
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -59,10 +67,21 @@ export default async function RecipePage({
               <p className="text-muted-foreground text-lg max-w-3xl">
                 by {recipe.author.username}
               </p>
-              <FollowButton
-                authorId={recipe.author.id}
-                initialIsFollowing={recipe.userStatus?.isFavorited ?? false}
-              />
+              {isAuthor ? (
+                <>
+                  <Button variant="outline" size="sm" className="gap-2" asChild>
+                    <Link href={`/recipes/${recipe.slug}/edit`}>
+                      <Pencil size={14} /> Edit
+                    </Link>
+                  </Button>
+                  <DeleteButton slug={recipe.slug} />
+                </>
+              ) : (
+                <FollowButton
+                  authorId={recipe.author.id}
+                  initialIsFollowing={recipe.userStatus?.isFollowing ?? false}
+                />
+              )}
             </span>
 
             {/* Stats */}
