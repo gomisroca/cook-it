@@ -88,7 +88,7 @@ export default function EditRecipeForm({ recipe }: Props) {
 
   const onSubmit = async (data: RecipeFormData) => {
     try {
-      const updated = await patch<Recipe>(`/recipes/slug/${recipe.slug}`, data);
+      const updated = await patch<Recipe>(`/recipes/${recipe.slug}`, data);
       sileo.success({
         title: "Recipe updated!",
         icon: <Check className="size-3.5" />,
