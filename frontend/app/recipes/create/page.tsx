@@ -17,7 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import { renameFiles } from "@/lib/rename-files";
 import { sileo } from "sileo";
 import { Ban, Check } from "lucide-react";
@@ -48,8 +47,9 @@ interface RecipeFormData {
   tags: string[];
 }
 
-export default function CreateRecipeForm() {
+export default function CreateRecipePage() {
   const router = useRouter();
+
   const { register, control, handleSubmit, watch } = useForm<RecipeFormData>({
     defaultValues: {
       ingredients: [{ name: "", quantity: undefined, unit: "" }],
@@ -57,11 +57,6 @@ export default function CreateRecipeForm() {
       tags: [],
     },
   });
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    setToken(localStorage.getItem("token"));
-  }, []);
 
   const {
     fields: ingredientFields,
@@ -91,8 +86,6 @@ export default function CreateRecipeForm() {
       });
     }
   };
-
-  if (!token) return null;
 
   return (
     <form
@@ -126,9 +119,6 @@ export default function CreateRecipeForm() {
             render={({ field }) => (
               <UploadButton<UploadThingRouter, "recipeHeaderImage">
                 endpoint="recipeHeaderImage"
-                headers={{
-                  Authorization: `Bearer ${token}`,
-                }}
                 onBeforeUploadBegin={(files) => {
                   return renameFiles(files);
                 }}
@@ -280,9 +270,6 @@ export default function CreateRecipeForm() {
                 render={({ field }) => (
                   <UploadButton<UploadThingRouter, "recipeStepImage">
                     endpoint="recipeStepImage"
-                    headers={{
-                      Authorization: `Bearer ${token}`,
-                    }}
                     onBeforeUploadBegin={(files) => {
                       return renameFiles(files);
                     }}
