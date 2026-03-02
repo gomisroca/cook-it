@@ -197,10 +197,11 @@ export class RecipesService {
     };
   }
 
-  async update(userId: string, id: string, dto: UpdateRecipeDto) {
+  async update(userId: string, slug: string, dto: UpdateRecipeDto) {
     const existing = await this.prisma.recipe.findUnique({
-      where: { id },
+      where: { slug },
       select: {
+        id: true,
         authorId: true,
         title: true,
         coverImageUrl: true,
@@ -241,7 +242,7 @@ export class RecipesService {
       name: i.name.trim().toLowerCase(),
     }));
 
-    let slug: string | undefined;
+    let newSlug: string | undefined;
     if (recipeData.title && recipeData.title !== existing.title) {
       const baseSlug = slugify(recipeData.title, {
         lower: true,
@@ -249,47 +250,47 @@ export class RecipesService {
         trim: true,
       });
 
-      slug = await this.generateUniqueSlug(baseSlug);
+      newSlug = await this.generateUniqueSlug(baseSlug);
     }
 
     const result = await this.prisma.$transaction(async (tx) => {
       await tx.recipe.update({
-        where: { id },
+        where: { slug },
         data: {
           ...recipeData,
-          ...(slug && { slug }),
+          ...(newSlug && { slug: newSlug }),
         },
       });
 
       if (normalizedIngredients) {
         await tx.ingredient.deleteMany({
-          where: { recipeId: id },
+          where: { recipeId: existing.id },
         });
 
         await tx.ingredient.createMany({
           data: normalizedIngredients.map((ingredient) => ({
             ...ingredient,
-            recipeId: id,
+            recipeId: existing.id,
           })),
         });
       }
 
       if (steps) {
         await tx.step.deleteMany({
-          where: { recipeId: id },
+          where: { recipeId: existing.id },
         });
 
         await tx.step.createMany({
           data: steps.map((step) => ({
             ...step,
-            recipeId: id,
+            recipeId: existing.id,
           })),
         });
       }
 
       if (normalizedTags) {
         await tx.recipeTag.deleteMany({
-          where: { recipeId: id },
+          where: { recipeId: existing.id },
         });
 
         for (const tagName of normalizedTags) {
@@ -301,7 +302,7 @@ export class RecipesService {
 
           await tx.recipeTag.create({
             data: {
-              recipeId: id,
+              recipeId: existing.id,
               tagId: tag.id,
             },
           });
@@ -309,7 +310,7 @@ export class RecipesService {
       }
 
       return tx.recipe.findUnique({
-        where: { id },
+        where: { id: existing.id },
         include: {
           ingredients: true,
           steps: { orderBy: { order: 'asc' } },

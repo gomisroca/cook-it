@@ -69,17 +69,17 @@ export class RecipesController {
   }
 
   /**
-   * PATCH /recipes/:id
-   * Updates a recipe by ID
+   * PATCH /recipes/:slug
+   * Updates a recipe by slug
    */
-  @Patch(':id')
+  @Patch(':slug')
   @UseGuards(AuthGuard)
   update(
     @CurrentUser() user: JwtUser,
-    @Param('id') id: string,
+    @Param('slug') slug: string,
     @Body() dto: UpdateRecipeDto,
   ) {
-    return this.recipesService.update(user.id, id, dto);
+    return this.recipesService.update(user.id, slug, dto);
   }
 
   /**
