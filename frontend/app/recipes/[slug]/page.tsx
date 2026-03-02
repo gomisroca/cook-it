@@ -24,6 +24,16 @@ interface ExpandedRecipe extends Recipe {
   } | null;
 }
 
+function EditButton({ slug }: { slug: string }) {
+  return (
+    <Button variant="outline" size="sm" className="gap-2" asChild>
+      <Link href={`/recipes/${slug}/edit`}>
+        <Pencil size={14} /> Edit
+      </Link>
+    </Button>
+  );
+}
+
 export default async function RecipePage({
   params,
 }: {
@@ -69,11 +79,7 @@ export default async function RecipePage({
               </p>
               {isAuthor ? (
                 <>
-                  <Button variant="outline" size="sm" className="gap-2" asChild>
-                    <Link href={`/recipes/${recipe.slug}/edit`}>
-                      <Pencil size={14} /> Edit
-                    </Link>
-                  </Button>
+                  <EditButton slug={recipe.slug} />
                   <DeleteButton slug={recipe.slug} />
                 </>
               ) : (
