@@ -31,6 +31,8 @@ interface Recipe {
   title: string;
   coverImageUrl?: string;
   slug: string;
+  difficulty?: "EASY" | "MEDIUM" | "HARD";
+  servings?: number;
   description?: string;
   prepTime?: number;
   cookingTime?: number;

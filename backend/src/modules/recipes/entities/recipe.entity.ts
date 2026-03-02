@@ -5,6 +5,7 @@ import { StepEntity } from './step.entity';
 import { CommentEntity } from './comment.entity';
 import { TagEntity } from './tag.entity';
 import { UserStatusEntity } from './user-status.entity';
+import { Difficulty } from '@/generated/prisma/enums';
 
 export class RecipeEntity {
   @Expose()
@@ -18,6 +19,12 @@ export class RecipeEntity {
 
   @Expose()
   slug: string;
+
+  @Expose()
+  difficulty?: Difficulty | null;
+
+  @Expose()
+  servings?: number | null;
 
   @Expose()
   description?: string | null;
