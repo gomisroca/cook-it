@@ -25,7 +25,7 @@ export default function DeleteButton({ slug }: Props) {
 
     setLoading(true);
     try {
-      await del(`/recipes/slug/${slug}`);
+      await del(`/recipes/${slug}`);
       sileo.success({ title: "Recipe deleted" });
       router.push("/recipes");
     } catch {
