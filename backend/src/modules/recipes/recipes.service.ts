@@ -327,15 +327,16 @@ export class RecipesService {
     return result;
   }
 
-  async remove(userId: string, id: string) {
+  async remove(userId: string, slug: string) {
     const recipe = await this.prisma.recipe.findUnique({
-      where: { id },
+      where: { slug },
       include: { steps: { select: { imageUrl: true } } },
     });
 
     if (!recipe || recipe.authorId !== userId) {
       throw new ForbiddenException();
     }
+
     const urlsToDelete = [
       recipe.coverImageUrl,
       ...recipe.steps.map((s) => s.imageUrl),
@@ -345,9 +346,7 @@ export class RecipesService {
       await this.uploadthingService.deleteFiles(urlsToDelete);
     }
 
-    return this.prisma.recipe.delete({
-      where: { id },
-    });
+    return this.prisma.recipe.delete({ where: { slug } });
   }
 
   async userStatus(userId: string, slug: string) {

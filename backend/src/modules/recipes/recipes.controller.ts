@@ -83,13 +83,13 @@ export class RecipesController {
   }
 
   /**
-   * DELETE /recipes/:id
-   * Deletes a recipe by ID
+   * DELETE /recipes/:slug
+   * Deletes a recipe by slug
    */
-  @Delete(':id')
+  @Delete(':slug')
   @UseGuards(AuthGuard)
-  remove(@CurrentUser() user: JwtUser, @Param('id') id: string) {
-    return this.recipesService.remove(user.id, id);
+  remove(@CurrentUser() user: JwtUser, @Param('slug') slug: string) {
+    return this.recipesService.remove(user.id, slug);
   }
 
   /**
