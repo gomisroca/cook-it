@@ -8,7 +8,14 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, RecipesModule, TagsModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    UsersModule,
+    RecipesModule,
+    TagsModule,
+    AppModule,
+  ],
   controllers: [],
   providers: [
     {
