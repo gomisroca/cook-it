@@ -40,6 +40,7 @@ interface RecipeFormData {
   description?: string;
   coverImageUrl?: string;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
+  isPublic?: boolean;
   servings?: number;
   prepTime?: number;
   cookingTime?: number;
@@ -65,6 +66,7 @@ export default function EditRecipeForm({ recipe }: Props) {
       description: recipe.description ?? "",
       coverImageUrl: recipe.coverImageUrl ?? "",
       difficulty: recipe.difficulty,
+      isPublic: recipe.isPublic,
       servings: recipe.servings ?? undefined,
       prepTime: recipe.prepTime ?? undefined,
       cookingTime: recipe.cookingTime ?? undefined,
@@ -192,6 +194,34 @@ export default function EditRecipeForm({ recipe }: Props) {
           </select>
         </Field>
       </FieldSet>
+
+      <FieldSeparator className="my-2" />
+
+      <FieldSet>
+        <Field>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <Controller
+              control={control}
+              name="isPublic"
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  className="h-4 w-4 rounded border-input accent-primary cursor-pointer"
+                />
+              )}
+            />
+            <div>
+              <FieldLabel className="cursor-pointer">Public recipe</FieldLabel>
+              <p className="text-xs text-muted-foreground">
+                Public recipes are visible to everyone
+              </p>
+            </div>
+          </label>
+        </Field>
+      </FieldSet>
+
       <FieldSeparator className="my-2" />
 
       <FieldSet>

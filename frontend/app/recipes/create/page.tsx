@@ -39,6 +39,7 @@ interface RecipeFormData {
   description?: string;
   coverImageUrl?: string;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
+  isPublic?: boolean;
   servings?: number;
   prepTime?: number;
   cookingTime?: number;
@@ -52,6 +53,7 @@ export default function CreateRecipePage() {
 
   const { register, control, handleSubmit, watch } = useForm<RecipeFormData>({
     defaultValues: {
+      isPublic: true,
       ingredients: [{ name: "", quantity: undefined, unit: "" }],
       steps: [{ order: 1, instruction: "", duration: undefined, imageUrl: "" }],
       tags: [],
@@ -179,6 +181,34 @@ export default function CreateRecipePage() {
           </select>
         </Field>
       </FieldSet>
+
+      <FieldSeparator className="my-2" />
+
+      <FieldSet>
+        <Field>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <Controller
+              control={control}
+              name="isPublic"
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  className="h-4 w-4 rounded border-input accent-primary cursor-pointer"
+                />
+              )}
+            />
+            <div>
+              <FieldLabel className="cursor-pointer">Public recipe</FieldLabel>
+              <p className="text-xs text-muted-foreground">
+                Public recipes are visible to everyone
+              </p>
+            </div>
+          </label>
+        </Field>
+      </FieldSet>
+
       <FieldSeparator className="my-2" />
 
       {/* Servings & Time */}
