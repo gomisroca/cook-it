@@ -81,9 +81,19 @@ export default function LoginPage() {
         <Button type="submit" className="w-full">
           Login
         </Button>
-        <p className="text-sm text-center text-muted-foreground">
-          Not a member? <Link href="/register">Register now</Link>
-        </p>
+        <section className="flex flex-col gap-2">
+          <p className="text-sm text-center text-muted-foreground">
+            Not a member? <Link href="/register">Register now</Link>
+          </p>
+          <p className="text-sm text-right">
+            <Link
+              href="/forgot-password"
+              className="text-muted-foreground hover:text-foreground hover:underline text-xs"
+            >
+              Forgot password?
+            </Link>
+          </p>
+        </section>
       </FieldSet>
     </form>
   );
