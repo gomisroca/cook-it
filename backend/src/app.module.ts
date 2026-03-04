@@ -6,6 +6,7 @@ import { RecipesModule } from './modules/recipes/recipes.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { TagsModule } from './modules/tags/tags.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TagsModule } from './modules/tags/tags.module';
     UsersModule,
     RecipesModule,
     TagsModule,
+    MailModule,
     AppModule,
   ],
   controllers: [],
