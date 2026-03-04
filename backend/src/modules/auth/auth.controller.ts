@@ -12,6 +12,8 @@ import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -83,5 +85,26 @@ export class AuthController {
     if (!token) throw new UnauthorizedException('No token provided');
 
     return this.authService.verifyToken(token);
+  }
+
+  /**
+   * POST /auth/forgot-password
+   * Forgot password
+   */
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.authService.forgotPassword(dto.email);
+    // always return the same response
+    return { message: 'If that email exists, a reset link has been sent' };
+  }
+
+  /**
+   * POST /auth/reset-password
+   * Reset password
+   */
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.authService.resetPassword(dto.token, dto.password);
+    return { message: 'Password reset successfully' };
   }
 }
