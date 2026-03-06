@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -14,6 +16,7 @@ import { SkipTransform } from '@/common/decorators/skip-transform.decorator';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { JwtUser } from '../auth/jwt.interface';
 import { AuthGuard } from '@/common/guards/auth.guard';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('users')
 export class UsersController {
@@ -32,12 +35,22 @@ export class UsersController {
   }
 
   /**
-   * GET /users/:id
-   * Returns a single user by ID
+   * PATCH /users/me
+   * Update user profile
    */
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  @Patch('me')
+  @UseGuards(AuthGuard)
+  async updateMe(@CurrentUser() user: JwtUser, @Body() dto: UpdateProfileDto) {
+    return this.usersService.updateMe(user.id, dto);
+  }
+
+  /**
+   * GET /users/:username
+   * Returns a single user
+   */
+  @Get(':username')
+  async getProfile(@Param('username') username: string) {
+    return this.usersService.getProfile(username);
   }
 
   /**
