@@ -12,6 +12,7 @@ import {
   CookingPot,
   ForkKnifeCrossed,
   LogOut,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -34,6 +35,12 @@ export default function Navigation() {
   const navItems = [
     ...(user
       ? [
+          {
+            label: "Profile",
+            href: `/users/${user.username}`,
+            icon: User,
+            section: "Account",
+          },
           {
             label: "Logout",
             href: "#",
