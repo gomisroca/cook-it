@@ -8,6 +8,7 @@ import RecipeCard from "@/components/recipe-card";
 import { defaultFilters, RecipeFilters } from "./recipe-filters";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   initialData: Recipe[];
@@ -98,19 +99,31 @@ export default function RecipeBrowse({ initialData, initialCursor }: Props) {
   return (
     <>
       <RecipeFilters filters={filters} onChange={setFilters} />
-
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {recipes.map((recipe, index) => (
-          <motion.div
-            key={recipe.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.05 }}
-          >
-            <RecipeCard recipe={recipe} />
-          </motion.div>
-        ))}
-      </div>
+      {recipes.length === 0 && !loading ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center space-y-3">
+          <span className="text-5xl">🍽️</span>
+          <h3 className="text-lg font-semibold">No recipes found</h3>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            Try adjusting your filters or search term.
+          </p>
+          <Button variant="outline" onClick={() => setFilters(defaultFilters)}>
+            Clear filters
+          </Button>
+        </div>
+      ) : (
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {recipes.map((recipe, index) => (
+            <motion.div
+              key={recipe.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+            >
+              <RecipeCard recipe={recipe} />
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {loading && (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-8">
