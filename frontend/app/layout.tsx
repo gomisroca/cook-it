@@ -46,7 +46,7 @@ export default async function RootLayout({
 
         <AuthProvider user={user}>
           <Navigation />
-          <main className="flex items-center justify-center py-4 px-5 sm:px-6 xl:px-8 mt-26 mb-10 xl:my-10 w-fit bg-white mx-auto rounded-md shadow-sm">
+          <main className="w-full max-w-7xl bg-white mx-auto rounded-md shadow-sm py-4 px-5 sm:px-6 xl:px-8 mt-26 mb-10 xl:my-10">
             {children}
           </main>
           <div id="modal-root" />
