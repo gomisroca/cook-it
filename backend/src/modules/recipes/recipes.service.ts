@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -12,6 +13,7 @@ import { RecipeEntity } from './entities/recipe.entity';
 import { CursorDto } from '@/common/dto/cursor.dto';
 import slugify from 'slugify';
 import { UploadthingService } from '@/modules/uploadthing/uploadthing.service';
+import { Prisma } from '@/generated/prisma/client';
 
 @Injectable()
 export class RecipesService {
@@ -54,44 +56,53 @@ export class RecipesService {
     });
 
     const slug = await this.generateUniqueSlug(baseSlug);
+    try {
+      return await this.prisma.recipe.create({
+        data: {
+          ...recipeData,
+          slug,
+          authorId: userId,
 
-    return this.prisma.recipe.create({
-      data: {
-        ...recipeData,
-        slug,
-        authorId: userId,
+          ingredients: {
+            create: normalizedIngredients,
+          },
 
-        ingredients: {
-          create: normalizedIngredients,
-        },
+          steps: {
+            create: steps,
+          },
 
-        steps: {
-          create: steps,
-        },
-
-        tags: normalizedTags
-          ? {
-              create: normalizedTags.map((tagName) => ({
-                tag: {
-                  connectOrCreate: {
-                    where: { name: tagName },
-                    create: { name: tagName },
+          tags: normalizedTags
+            ? {
+                create: normalizedTags.map((tagName) => ({
+                  tag: {
+                    connectOrCreate: {
+                      where: { name: tagName },
+                      create: { name: tagName },
+                    },
                   },
-                },
-              })),
-            }
-          : undefined,
-      },
-
-      include: {
-        ingredients: true,
-        steps: true,
-        tags: {
-          include: { tag: true },
+                })),
+              }
+            : undefined,
         },
-        author: true,
-      },
-    });
+
+        include: {
+          ingredients: true,
+          steps: true,
+          tags: {
+            include: { tag: true },
+          },
+          author: true,
+        },
+      });
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        throw new ConflictException('A recipe with this title already exists');
+      }
+      throw e;
+    }
   }
 
   async findAll(query: QueryRecipesDto, pagination: CursorDto) {
@@ -253,72 +264,90 @@ export class RecipesService {
       newSlug = await this.generateUniqueSlug(baseSlug);
     }
 
-    const result = await this.prisma.$transaction(async (tx) => {
-      await tx.recipe.update({
-        where: { slug },
-        data: {
-          ...recipeData,
-          ...(newSlug && { slug: newSlug }),
-        },
-      });
-
-      if (normalizedIngredients) {
-        await tx.ingredient.deleteMany({
-          where: { recipeId: existing.id },
+    let result: Prisma.RecipeGetPayload<{
+      include: {
+        ingredients: true;
+        steps: true;
+        tags: { include: { tag: true } };
+        author: true;
+      };
+    }> | null;
+    try {
+      result = await this.prisma.$transaction(async (tx) => {
+        await tx.recipe.update({
+          where: { slug },
+          data: {
+            ...recipeData,
+            ...(newSlug && { slug: newSlug }),
+          },
         });
 
-        await tx.ingredient.createMany({
-          data: normalizedIngredients.map((ingredient) => ({
-            ...ingredient,
-            recipeId: existing.id,
-          })),
-        });
-      }
-
-      if (steps) {
-        await tx.step.deleteMany({
-          where: { recipeId: existing.id },
-        });
-
-        await tx.step.createMany({
-          data: steps.map((step) => ({
-            ...step,
-            recipeId: existing.id,
-          })),
-        });
-      }
-
-      if (normalizedTags) {
-        await tx.recipeTag.deleteMany({
-          where: { recipeId: existing.id },
-        });
-
-        for (const tagName of normalizedTags) {
-          const tag = await tx.tag.upsert({
-            where: { name: tagName },
-            update: {},
-            create: { name: tagName },
+        if (normalizedIngredients) {
+          await tx.ingredient.deleteMany({
+            where: { recipeId: existing.id },
           });
 
-          await tx.recipeTag.create({
-            data: {
+          await tx.ingredient.createMany({
+            data: normalizedIngredients.map((ingredient) => ({
+              ...ingredient,
               recipeId: existing.id,
-              tagId: tag.id,
-            },
+            })),
           });
         }
-      }
 
-      return tx.recipe.findUnique({
-        where: { id: existing.id },
-        include: {
-          ingredients: true,
-          steps: { orderBy: { order: 'asc' } },
-          tags: { include: { tag: true } },
-          author: true,
-        },
+        if (steps) {
+          await tx.step.deleteMany({
+            where: { recipeId: existing.id },
+          });
+
+          await tx.step.createMany({
+            data: steps.map((step) => ({
+              ...step,
+              recipeId: existing.id,
+            })),
+          });
+        }
+
+        if (normalizedTags) {
+          await tx.recipeTag.deleteMany({
+            where: { recipeId: existing.id },
+          });
+
+          for (const tagName of normalizedTags) {
+            const tag = await tx.tag.upsert({
+              where: { name: tagName },
+              update: {},
+              create: { name: tagName },
+            });
+
+            await tx.recipeTag.create({
+              data: {
+                recipeId: existing.id,
+                tagId: tag.id,
+              },
+            });
+          }
+        }
+
+        return tx.recipe.findUnique({
+          where: { id: existing.id },
+          include: {
+            ingredients: true,
+            steps: { orderBy: { order: 'asc' } },
+            tags: { include: { tag: true } },
+            author: true,
+          },
+        });
       });
-    });
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        throw new ConflictException('A recipe with this title already exists');
+      }
+      throw e;
+    }
 
     if (urlsToDelete.length > 0) {
       await this.uploadthingService.deleteFiles(urlsToDelete);

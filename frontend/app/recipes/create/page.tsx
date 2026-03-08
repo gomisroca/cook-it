@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { renameFiles } from "@/lib/rename-files";
 import { sileo } from "sileo";
 import { Ban, Check } from "lucide-react";
+import FormError from "@/components/ui/form-error";
 
 interface Ingredient {
   name: string;
@@ -51,7 +52,14 @@ interface RecipeFormData {
 export default function CreateRecipePage() {
   const router = useRouter();
 
-  const { register, control, handleSubmit, watch } = useForm<RecipeFormData>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    setError,
+    formState: { errors },
+  } = useForm<RecipeFormData>({
     defaultValues: {
       isPublic: true,
       ingredients: [{ name: "", quantity: undefined, unit: "" }],
@@ -80,12 +88,20 @@ export default function CreateRecipePage() {
         icon: <Check className="size-3.5" />,
       });
       router.push("/recipes");
-    } catch (err) {
-      console.error(err);
-      sileo.error({
-        title: "Error creating recipe",
-        icon: <Ban className="size-3.5" />,
-      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message.toLowerCase() : "";
+
+      if (message.includes("title") || message.includes("slug")) {
+        setError("title", {
+          type: "manual",
+          message: "A recipe with this title already exists.",
+        });
+      } else {
+        sileo.error({
+          title: "Error creating recipe",
+          icon: <Ban className="size-3.5" />,
+        });
+      }
     }
   };
 
@@ -100,6 +116,7 @@ export default function CreateRecipePage() {
           <Field>
             <FieldLabel>Title</FieldLabel>
             <Input {...register("title")} className="input mt-1 w-full" />
+            {errors.title && <FormError>{errors.title.message}</FormError>}
           </Field>
 
           {/* Description */}

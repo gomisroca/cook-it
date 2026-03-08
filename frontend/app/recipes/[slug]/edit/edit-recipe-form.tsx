@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { renameFiles } from "@/lib/rename-files";
 import { sileo } from "sileo";
 import { Ban, Check } from "lucide-react";
+import FormError from "@/components/ui/form-error";
 
 interface Ingredient {
   name: string;
@@ -60,7 +61,14 @@ interface Props {
 export default function EditRecipeForm({ recipe }: Props) {
   const router = useRouter();
 
-  const { register, control, handleSubmit, watch } = useForm<RecipeFormData>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    setError,
+    formState: { errors },
+  } = useForm<RecipeFormData>({
     defaultValues: {
       title: recipe.title,
       description: recipe.description ?? "",
@@ -97,12 +105,20 @@ export default function EditRecipeForm({ recipe }: Props) {
       });
       // redirect to new slug in case title changed
       router.push(`/recipes/${updated.slug}`);
-    } catch (err) {
-      console.error(err);
-      sileo.error({
-        title: "Error updating recipe",
-        icon: <Ban className="size-3.5" />,
-      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message.toLowerCase() : "";
+
+      if (message.includes("title") || message.includes("slug")) {
+        setError("title", {
+          type: "manual",
+          message: "A recipe with this title already exists.",
+        });
+      } else {
+        sileo.error({
+          title: "Error updating recipe",
+          icon: <Ban className="size-3.5" />,
+        });
+      }
     }
   };
 
@@ -116,6 +132,7 @@ export default function EditRecipeForm({ recipe }: Props) {
           <Field>
             <FieldLabel>Title</FieldLabel>
             <Input {...register("title")} className="input mt-1 w-full" />
+            {errors.title && <FormError>{errors.title.message}</FormError>}
           </Field>
           <Field>
             <FieldLabel>Description</FieldLabel>
