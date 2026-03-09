@@ -13,6 +13,7 @@ import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import FormError from "@/components/ui/form-error";
 import { post } from "@/services/api-client";
 import Link from "@/components/ui/link";
+import { GoogleAuthButton } from "@/components/google-auth-btn";
 
 const registerSchema = z.object({
   username: z.string().min(3),
@@ -60,43 +61,54 @@ export default function RegisterPage() {
   if (user) return null;
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="bg-white w-xs md:w-md p-4 rounded-md"
-    >
-      <FieldSet>
-        <FieldGroup>
-          <Field>
-            <FieldLabel>Username</FieldLabel>
-            <Input {...register("username")} placeholder="Username" />
-            {errors.username && (
-              <FormError>{errors.username.message}</FormError>
-            )}
-          </Field>
-          <Field>
-            <FieldLabel>Email</FieldLabel>
-            <Input {...register("email")} placeholder="Email" />
-            {errors.email && <FormError>{errors.email.message}</FormError>}
-          </Field>
-          <Field>
-            <FieldLabel>Password</FieldLabel>
-            <Input
-              {...register("password")}
-              type="password"
-              placeholder="Password"
-            />
-            {errors.password && (
-              <FormError>{errors.password.message}</FormError>
-            )}
-          </Field>
-        </FieldGroup>
-        <Button type="submit" className="w-full">
-          Register
-        </Button>
-        <p className="text-sm text-center text-muted-foreground">
-          Already a member? <Link href="/login">Log in now</Link>
-        </p>
-      </FieldSet>
-    </form>
+    <>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-white w-xs md:w-md p-4 rounded-md"
+      >
+        <FieldSet>
+          <FieldGroup>
+            <Field>
+              <FieldLabel>Username</FieldLabel>
+              <Input {...register("username")} placeholder="Username" />
+              {errors.username && (
+                <FormError>{errors.username.message}</FormError>
+              )}
+            </Field>
+            <Field>
+              <FieldLabel>Email</FieldLabel>
+              <Input {...register("email")} placeholder="Email" />
+              {errors.email && <FormError>{errors.email.message}</FormError>}
+            </Field>
+            <Field>
+              <FieldLabel>Password</FieldLabel>
+              <Input
+                {...register("password")}
+                type="password"
+                placeholder="Password"
+              />
+              {errors.password && (
+                <FormError>{errors.password.message}</FormError>
+              )}
+            </Field>
+          </FieldGroup>
+          <Button type="submit" className="w-full">
+            Register
+          </Button>
+          <p className="text-sm text-center text-muted-foreground">
+            Already a member? <Link href="/login">Log in now</Link>
+          </p>
+        </FieldSet>
+      </form>
+      <div className="relative my-2">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs text-muted-foreground">
+          <span className="bg-white px-2">or</span>
+        </div>
+      </div>
+      <GoogleAuthButton label="Sign up with Google" />
+    </>
   );
 }

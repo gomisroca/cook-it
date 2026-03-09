@@ -12,6 +12,7 @@ import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import FormError from "@/components/ui/form-error";
 import { post } from "@/services/api-client";
 import Link from "@/components/ui/link";
+import { GoogleAuthButton } from "@/components/google-auth-btn";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -54,47 +55,58 @@ export default function LoginPage() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="bg-white w-xs md:w-md p-4 rounded-md"
-    >
-      <FieldSet>
-        <FieldGroup>
-          <Field>
-            <FieldLabel>Email</FieldLabel>
-            <Input {...register("email")} placeholder="Email" required />
-            {errors.email && <FormError>{errors.email.message}</FormError>}
-          </Field>
-          <Field>
-            <FieldLabel>Password</FieldLabel>
-            <Input
-              {...register("password")}
-              type="password"
-              placeholder="Password"
-              required
-            />
-            {errors.password && (
-              <FormError>{errors.password.message}</FormError>
-            )}
-          </Field>
-        </FieldGroup>
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-        <section className="flex flex-col gap-2">
-          <p className="text-sm text-center text-muted-foreground">
-            Not a member? <Link href="/register">Register now</Link>
-          </p>
-          <p className="text-sm text-right">
-            <Link
-              href="/forgot-password"
-              className="text-muted-foreground hover:text-foreground hover:underline text-xs"
-            >
-              Forgot password?
-            </Link>
-          </p>
-        </section>
-      </FieldSet>
-    </form>
+    <>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-white w-xs md:w-md p-4 rounded-md"
+      >
+        <FieldSet>
+          <FieldGroup>
+            <Field>
+              <FieldLabel>Email</FieldLabel>
+              <Input {...register("email")} placeholder="Email" required />
+              {errors.email && <FormError>{errors.email.message}</FormError>}
+            </Field>
+            <Field>
+              <FieldLabel>Password</FieldLabel>
+              <Input
+                {...register("password")}
+                type="password"
+                placeholder="Password"
+                required
+              />
+              {errors.password && (
+                <FormError>{errors.password.message}</FormError>
+              )}
+            </Field>
+          </FieldGroup>
+          <Button type="submit" className="w-full">
+            Login
+          </Button>
+          <section className="flex flex-col gap-2">
+            <p className="text-sm text-center text-muted-foreground">
+              Not a member? <Link href="/register">Register now</Link>
+            </p>
+            <p className="text-sm text-right">
+              <Link
+                href="/forgot-password"
+                className="text-muted-foreground hover:text-foreground hover:underline text-xs"
+              >
+                Forgot password?
+              </Link>
+            </p>
+          </section>
+        </FieldSet>
+      </form>
+      <div className="relative my-2">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs text-muted-foreground">
+          <span className="bg-white px-2">or</span>
+        </div>
+      </div>
+      <GoogleAuthButton label="Continue with Google" />
+    </>
   );
 }
