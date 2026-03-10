@@ -7,6 +7,7 @@ import {
   Get,
   Res,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
@@ -14,6 +15,9 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
+import { User } from '@/generated/prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -106,5 +110,37 @@ export class AuthController {
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.authService.resetPassword(dto.token, dto.password);
     return { message: 'Password reset successfully' };
+  }
+
+  /**
+   * GET /auth/google
+   * Google OAuth
+   */
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth() {
+    // Guard redirects to Google
+  }
+
+  /**
+   * GET /auth/google/callback
+   * Google OAuth callback
+   */
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  googleCallback(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { access_token } = this.authService.generateToken(user);
+
+    res.cookie('token', access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    res.redirect(process.env.FRONTEND_URL!);
   }
 }
