@@ -9,9 +9,10 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { User } from '@/generated/prisma/client';
+import { Role, User } from '@/generated/prisma/client';
 import { JwtUser } from './jwt.interface';
 import { MailService } from '../mail/mail.service';
+import slugify from 'slugify';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,15 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
+
+  generateToken(user: { id: string; email: string; role: Role }) {
+    const payload: JwtUser = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+    return { access_token: this.jwtService.sign(payload) };
+  }
 
   async register(dto: RegisterDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -49,10 +59,9 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.validateUser(dto.email, dto.password);
     const payload = { id: user.id, username: user.username, role: user.role };
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: payload,
-    };
+
+    const { access_token } = this.generateToken(user);
+    return { access_token, user: payload };
   }
 
   verifyToken(token: string): JwtUser {
@@ -100,5 +109,49 @@ export class AuthService {
         data: { usedAt: new Date() },
       }),
     ]);
+  }
+
+  async findOrCreateGoogleUser({
+    googleId,
+    email,
+    displayName,
+    avatarUrl,
+  }: {
+    googleId: string;
+    email: string;
+    displayName: string;
+    avatarUrl?: string;
+  }) {
+    let user = await this.prisma.user.findUnique({ where: { googleId } });
+    if (user) return user;
+
+    user = await this.prisma.user.findUnique({ where: { email } });
+    if (user) {
+      return this.prisma.user.update({
+        where: { email },
+        data: { googleId, avatarUrl: user.avatarUrl ?? avatarUrl },
+      });
+    }
+
+    const baseUsername = slugify(displayName, {
+      lower: true,
+      strict: true,
+      trim: true,
+    });
+
+    let username = baseUsername;
+    let suffix = 1;
+    while (await this.prisma.user.findUnique({ where: { username } })) {
+      username = `${baseUsername}${suffix++}`;
+    }
+
+    return this.prisma.user.create({
+      data: {
+        email,
+        googleId,
+        username,
+        avatarUrl,
+      },
+    });
   }
 }
