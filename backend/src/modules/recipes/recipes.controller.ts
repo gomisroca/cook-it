@@ -47,6 +47,18 @@ export class RecipesController {
   ) {
     return this.recipesService.findAll(query, pagination);
   }
+  /**
+   * GET /recipes/mine
+   * Returns paginated recipes created by the current user
+   */
+  @Get('mine')
+  @UseGuards(AuthGuard)
+  async findMine(
+    @CurrentUser() user: JwtUser,
+    @PaginatedQuery() pagination: CursorDto,
+  ) {
+    return this.recipesService.findMine(user.id, pagination);
+  }
 
   /**
    * GET /recipes/ingredients/suggestions

@@ -208,6 +208,31 @@ export class RecipesService {
     };
   }
 
+  async findMine(userId: string, pagination: CursorDto) {
+    const { cursor, take } = pagination;
+
+    return paginateEntities(
+      {
+        model: this.prisma.recipe,
+        cursor,
+        take: take || 10,
+        includeTotal: true,
+        query: {
+          where: { authorId: userId },
+          include: {
+            tags: { include: { tag: true } },
+            author: true,
+            _count: {
+              select: { likes: true, favorites: true, comments: true },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+      RecipeEntity,
+    );
+  }
+
   async update(userId: string, slug: string, dto: UpdateRecipeDto) {
     const existing = await this.prisma.recipe.findUnique({
       where: { slug },
