@@ -13,6 +13,7 @@ import {
   ForkKnifeCrossed,
   LogOut,
   User,
+  ChefHat,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -47,6 +48,12 @@ export default function Navigation() {
             icon: LogOut,
             section: "Account",
             action: "logout",
+          },
+          {
+            label: "My Recipes",
+            href: "/recipes/mine",
+            icon: ChefHat,
+            section: "Recipes",
           },
           {
             label: "Create",
