@@ -61,7 +61,7 @@ export default function RegisterPage() {
   if (user) return null;
 
   return (
-    <>
+    <div className="flex flex-col">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white w-xs md:w-md p-4 rounded-md"
@@ -109,6 +109,6 @@ export default function RegisterPage() {
         </div>
       </div>
       <GoogleAuthButton label="Sign up with Google" />
-    </>
+    </div>
   );
 }

@@ -55,7 +55,7 @@ export default function LoginPage() {
   };
 
   return (
-    <>
+    <div className="flex flex-col">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white w-xs md:w-md p-4 rounded-md"
@@ -107,6 +107,6 @@ export default function LoginPage() {
         </div>
       </div>
       <GoogleAuthButton label="Continue with Google" />
-    </>
+    </div>
   );
 }
