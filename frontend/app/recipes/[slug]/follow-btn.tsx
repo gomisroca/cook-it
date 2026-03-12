@@ -18,29 +18,36 @@ export default function FollowButton({ authorId, initialIsFollowing }: Props) {
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [isPending, startTransition] = useTransition();
 
-  if (!user) return null; // hide if not logged in
-  if (user.id === authorId) return null; // prevent self-follow
+  if (!user) return null;
+  if (user.id === authorId) return null;
 
   const handleFollow = async () => {
+    const prevFollowing = isFollowing;
+
+    setIsFollowing(!isFollowing);
+
     startTransition(async () => {
       try {
-        if (isFollowing) {
+        if (prevFollowing) {
           await del(`/users/follow/${authorId}`);
-          setIsFollowing(false);
         } else {
           await post(`/users/follow/${authorId}`);
-          setIsFollowing(true);
         }
-
-        router.refresh(); // keep server in sync
+        router.refresh();
       } catch (err) {
         console.error(err);
+        setIsFollowing(prevFollowing);
       }
     });
   };
 
   return (
-    <Button onClick={handleFollow} disabled={isPending}>
+    <Button
+      onClick={handleFollow}
+      disabled={isPending}
+      variant={isFollowing ? "outline" : "default"}
+      className={isPending ? "opacity-50 cursor-not-allowed" : ""}
+    >
       {isFollowing ? "Unfollow" : "Follow"}
     </Button>
   );
