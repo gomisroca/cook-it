@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface AuthContextType {
   user: User | null;
@@ -17,6 +23,10 @@ export function AuthProvider({
   children: ReactNode;
 }) {
   const [user, setUser] = useState<User | null>(initialUser);
+
+  useEffect(() => {
+    setUser(initialUser);
+  }, [initialUser]);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

@@ -47,8 +47,8 @@ export default function RegisterPage() {
         icon: <Handshake className="size-3.5" />,
       });
 
-      router.refresh();
       router.back();
+      router.refresh();
     } catch (err) {
       console.error(err);
       sileo.error({

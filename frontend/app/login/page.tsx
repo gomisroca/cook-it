@@ -38,13 +38,14 @@ export default function LoginPage() {
         email: data.email,
         password: data.password,
       });
+
       sileo.success({
         title: "Logged in!",
         icon: <Handshake className="size-3.5" />,
       });
 
-      router.refresh();
       router.back();
+      router.refresh();
     } catch (err) {
       console.error(err);
       sileo.error({
