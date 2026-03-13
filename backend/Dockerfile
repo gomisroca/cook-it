@@ -21,7 +21,7 @@ RUN adduser --system --uid 1001 nestjs
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/src/prisma ./prisma
 
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x entrypoint.sh
