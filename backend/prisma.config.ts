@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import { env, PrismaConfig } from 'prisma/config';
+import { defineConfig, env } from 'prisma/config';
 
-export default {
+export default defineConfig({
   schema: 'src/prisma/schema.prisma',
   datasource: {
     url: env('DATABASE_URL'),
@@ -9,4 +9,4 @@ export default {
   migrations: {
     path: 'src/prisma/migrations',
   },
-} satisfies PrismaConfig;
+});
