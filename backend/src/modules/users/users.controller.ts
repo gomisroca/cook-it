@@ -49,8 +49,23 @@ export class UsersController {
    * Returns a single user
    */
   @Get(':username')
-  async getProfile(@Param('username') username: string) {
-    return this.usersService.getProfile(username);
+  async getProfile(
+    @Param('username') username: string,
+    @PaginatedQuery() pagination: CursorDto,
+  ) {
+    return this.usersService.getProfile(username, pagination);
+  }
+
+  /**
+   * GET /users/:username/recipes
+   * Returns paginated recipes created by a user
+   */
+  @Get(':username/recipes')
+  async getUserRecipes(
+    @Param('username') username: string,
+    @PaginatedQuery() pagination: CursorDto,
+  ) {
+    return this.usersService.getUserRecipes(username, pagination);
   }
 
   /**

@@ -3,6 +3,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { paginateEntities } from '@/common/utils/pagination.util';
 import { UserEntity } from './entities/user.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { CursorDto } from '@/common/dto/cursor.dto';
+import { RecipeEntity } from '../recipes/entities/recipe.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,16 +18,6 @@ export class UsersService {
         take: take || 10,
         includeTotal: true,
 
-        query: {
-          where: {
-            // Example filters
-            // role: 'USER',
-          },
-
-          // Example relation include
-          // include: { posts: true },
-        },
-
         orderBy: {
           createdAt: 'desc',
         },
@@ -34,7 +26,7 @@ export class UsersService {
     );
   }
 
-  async getProfile(username: string) {
+  async getProfile(username: string, pagination: CursorDto) {
     const user = await this.prisma.user.findUnique({
       where: { username },
       select: {
@@ -46,9 +38,19 @@ export class UsersService {
         _count: {
           select: { followers: true, following: true },
         },
-        recipes: {
-          where: { isPublic: true },
-          orderBy: { createdAt: 'desc' },
+      },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const recipes = await paginateEntities(
+      {
+        model: this.prisma.recipe,
+        cursor: pagination.cursor,
+        take: pagination.take || 9,
+        includeTotal: false,
+        query: {
+          where: { authorId: user.id, isPublic: true },
           include: {
             tags: { include: { tag: true } },
             author: true,
@@ -57,12 +59,42 @@ export class UsersService {
             },
           },
         },
+        orderBy: { createdAt: 'desc' },
       },
+      RecipeEntity,
+    );
+
+    return { ...user, recipes };
+  }
+
+  async getUserRecipes(username: string, pagination: CursorDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: { id: true },
     });
 
     if (!user) throw new NotFoundException('User not found');
 
-    return user;
+    return paginateEntities(
+      {
+        model: this.prisma.recipe,
+        cursor: pagination.cursor,
+        take: pagination.take || 9,
+        includeTotal: false,
+        query: {
+          where: { authorId: user.id, isPublic: true },
+          include: {
+            tags: { include: { tag: true } },
+            author: true,
+            _count: {
+              select: { likes: true, favorites: true, comments: true },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+      RecipeEntity,
+    );
   }
 
   async follow(userId: string, followId: string) {
