@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { patch } from "@/services/api-client";
+import { get, patch } from "@/services/api-client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import RecipeCard from "@/components/recipe-card";
 import { UploadButton } from "@uploadthing/react";
@@ -22,7 +23,7 @@ interface ProfileData {
   avatarUrl?: string;
   createdAt: string;
   _count: { followers: number; following: number };
-  recipes: Recipe[];
+  recipes: PaginatedResponse<Recipe>;
 }
 
 interface Props {
@@ -36,6 +37,38 @@ export default function ProfileClient({ profile, isOwnProfile }: Props) {
   const [bio, setBio] = useState(profile.bio ?? "");
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl ?? "");
   const [loading, setLoading] = useState(false);
+
+  const [recipes, setRecipes] = useState(profile.recipes.data);
+  const [cursor, setCursor] = useState<string | undefined>(
+    profile.recipes.cursor,
+  );
+  const [recipesLoading, setRecipesLoading] = useState(false);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  const loadMore = useCallback(async () => {
+    if (!cursor || recipesLoading) return;
+    setRecipesLoading(true);
+    try {
+      const res = await get<PaginatedResponse<Recipe>>(
+        `/users/${profile.username}/recipes?cursor=${cursor}`,
+      );
+      setRecipes((prev) => [...prev, ...res.data]);
+      setCursor(res.cursor);
+    } finally {
+      setRecipesLoading(false);
+    }
+  }, [cursor, recipesLoading, profile.username]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore();
+      },
+      { threshold: 0.8 },
+    );
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   async function handleSave() {
     setLoading(true);
@@ -167,9 +200,7 @@ export default function ProfileClient({ profile, isOwnProfile }: Props) {
               following
             </span>
             <span>
-              <strong className="text-foreground">
-                {profile.recipes.length}
-              </strong>{" "}
+              <strong className="text-foreground">{recipes.length}</strong>{" "}
               recipes
             </span>
           </div>
@@ -181,25 +212,41 @@ export default function ProfileClient({ profile, isOwnProfile }: Props) {
       {/* Recipes */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Recipes</h2>
-        {profile.recipes.length === 0 ? (
+        {recipes.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             {isOwnProfile
               ? "You haven't created any recipes yet."
               : "No public recipes yet."}
           </p>
         ) : (
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {profile.recipes.map((recipe, index) => (
-              <motion.div
-                key={recipe.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-              >
-                <RecipeCard recipe={recipe} />
-              </motion.div>
-            ))}
-          </div>
+          <>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {recipes.map((recipe, index) => (
+                <motion.div
+                  key={recipe.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                >
+                  <RecipeCard recipe={recipe} />
+                </motion.div>
+              ))}
+            </div>
+
+            {recipesLoading && (
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-8">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="space-y-4">
+                    <Skeleton className="h-48 w-full rounded-xl" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {cursor && <div ref={loaderRef} className="h-10 mt-4" />}
+          </>
         )}
       </div>
     </div>
