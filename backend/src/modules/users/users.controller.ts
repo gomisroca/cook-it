@@ -67,6 +67,23 @@ export class UsersController {
   ) {
     return this.usersService.getUserRecipes(username, pagination);
   }
+  /**
+   * GET /users/:username/likes
+   * Returns liked recipes by a user
+   */
+  @Get(':username/likes')
+  async getLikes(@Param('username') username: string) {
+    return this.usersService.getLikes(username);
+  }
+
+  /**
+   * GET /users/:username/favorites
+   * Returns favorited recipes by a user
+   */
+  @Get(':username/favorites')
+  async getFavorites(@Param('username') username: string) {
+    return this.usersService.getFavorites(username);
+  }
 
   /**
    * POST /users/follow/:id

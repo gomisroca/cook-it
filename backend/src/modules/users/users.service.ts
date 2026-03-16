@@ -97,6 +97,52 @@ export class UsersService {
     );
   }
 
+  async getLikes(username: string) {
+    const user = await this.prisma.user.findUnique({ where: { username } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const likes = await this.prisma.like.findMany({
+      where: { userId: user.id },
+      include: {
+        recipe: {
+          include: {
+            tags: { include: { tag: true } },
+            author: true,
+            _count: {
+              select: { likes: true, favorites: true, comments: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return likes.map((l) => new RecipeEntity(l.recipe));
+  }
+
+  async getFavorites(username: string) {
+    const user = await this.prisma.user.findUnique({ where: { username } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const favorites = await this.prisma.favorite.findMany({
+      where: { userId: user.id },
+      include: {
+        recipe: {
+          include: {
+            tags: { include: { tag: true } },
+            author: true,
+            _count: {
+              select: { likes: true, favorites: true, comments: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return favorites.map((f) => new RecipeEntity(f.recipe));
+  }
+
   async follow(userId: string, followId: string) {
     return this.prisma.follow.create({
       data: {
