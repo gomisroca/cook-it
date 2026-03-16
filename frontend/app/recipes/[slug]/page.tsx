@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
 import DeleteButton from "./delete-btn";
+import { notFound } from "next/navigation";
 
 interface ExpandedRecipe extends Recipe {
   comments: RecipeComment[];
@@ -42,8 +43,10 @@ export default async function RecipePage({
   const slug = (await params).slug;
   const user = await getCurrentUser();
 
-  const recipe = await get<ExpandedRecipe>(`/recipes/${slug}`);
-  if (!recipe) return <p>Loading...</p>;
+  const recipe = await get<ExpandedRecipe>(`/recipes/${slug}`).catch(
+    () => null,
+  );
+  if (!recipe) notFound();
 
   const isAuthor = user?.id === recipe.author.id;
 
