@@ -22,10 +22,16 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  generateToken(user: { id: string; email: string; role: Role }) {
+  generateToken(user: {
+    id: string;
+    email: string;
+    username: string;
+    role: Role;
+  }) {
     const payload: JwtUser = {
       id: user.id,
       email: user.email,
+      username: user.username,
       role: user.role,
     };
     return { access_token: this.jwtService.sign(payload) };
