@@ -55,7 +55,12 @@ export class UsersService {
             tags: { include: { tag: true } },
             author: true,
             _count: {
-              select: { likes: true, favorites: true, comments: true },
+              select: {
+                followers: true,
+                following: true,
+                likes: true,
+                favorites: true,
+              },
             },
           },
         },

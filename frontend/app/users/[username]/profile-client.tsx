@@ -15,6 +15,7 @@ import { sileo } from "sileo";
 import { Pencil, X, Check, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 interface ProfileData {
   id: string;
@@ -22,7 +23,12 @@ interface ProfileData {
   bio?: string;
   avatarUrl?: string;
   createdAt: string;
-  _count: { followers: number; following: number };
+  _count: {
+    followers: number;
+    following: number;
+    likes: number;
+    favorites: number;
+  };
   recipes: PaginatedResponse<Recipe>;
 }
 
@@ -199,6 +205,24 @@ export default function ProfileClient({ profile, isOwnProfile }: Props) {
               </strong>{" "}
               following
             </span>
+            <Link
+              href={`/users/${profile.username}/likes`}
+              className="hover:text-foreground transition"
+            >
+              <strong className="text-foreground">
+                {profile._count.likes ?? 0}
+              </strong>{" "}
+              likes
+            </Link>
+            <Link
+              href={`/users/${profile.username}/favorites`}
+              className="hover:text-foreground transition"
+            >
+              <strong className="text-foreground">
+                {profile._count.favorites ?? 0}
+              </strong>{" "}
+              favorites
+            </Link>
             <span>
               <strong className="text-foreground">{recipes.length}</strong>{" "}
               recipes

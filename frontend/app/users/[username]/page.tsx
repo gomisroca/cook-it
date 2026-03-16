@@ -9,7 +9,12 @@ interface ProfileData {
   bio?: string;
   avatarUrl?: string;
   createdAt: string;
-  _count: { followers: number; following: number };
+  _count: {
+    followers: number;
+    following: number;
+    likes: number;
+    favorites: number;
+  };
   recipes: PaginatedResponse<Recipe>;
 }
 
