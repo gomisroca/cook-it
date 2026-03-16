@@ -36,7 +36,12 @@ export class UsersService {
         avatarUrl: true,
         createdAt: true,
         _count: {
-          select: { followers: true, following: true },
+          select: {
+            followers: true,
+            following: true,
+            likes: true,
+            favorites: true,
+          },
         },
       },
     });
