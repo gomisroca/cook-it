@@ -12,7 +12,16 @@ import RecipeCard from "@/components/recipe-card";
 import { UploadButton } from "@uploadthing/react";
 import { UploadThingRouter } from "@/app/api/uploadthing/core";
 import { sileo } from "sileo";
-import { Pencil, X, Check, Users } from "lucide-react";
+import {
+  Pencil,
+  X,
+  Check,
+  Users,
+  Heart,
+  BookOpen,
+  Star,
+  UserCheck,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
@@ -191,42 +200,57 @@ export default function ProfileClient({ profile, isOwnProfile }: Props) {
             </p>
           )}
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground pt-1">
-            <span className="flex items-center gap-1">
-              <Users size={14} />
-              <strong className="text-foreground">
-                {profile._count.followers}
-              </strong>{" "}
-              followers
-            </span>
-            <span>
-              <strong className="text-foreground">
-                {profile._count.following}
-              </strong>{" "}
-              following
-            </span>
-            <Link
-              href={`/users/${profile.username}/likes`}
-              className="hover:text-foreground transition"
-            >
-              <strong className="text-foreground">
-                {profile._count.likes ?? 0}
-              </strong>{" "}
-              likes
-            </Link>
-            <Link
-              href={`/users/${profile.username}/favorites`}
-              className="hover:text-foreground transition"
-            >
-              <strong className="text-foreground">
-                {profile._count.favorites ?? 0}
-              </strong>{" "}
-              favorites
-            </Link>
-            <span>
-              <strong className="text-foreground">{recipes.length}</strong>{" "}
-              recipes
-            </span>
+          <div className="flex flex-wrap gap-4 pt-1">
+            {/* Social */}
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Users size={14} />
+                <strong className="text-foreground">
+                  {profile._count.followers}
+                </strong>{" "}
+                followers
+              </span>
+              <span className="flex items-center gap-1">
+                <UserCheck size={14} />
+                <strong className="text-foreground">
+                  {profile._count.following}
+                </strong>{" "}
+                following
+              </span>
+            </div>
+
+            <span className="text-muted-foreground/40 text-sm">|</span>
+
+            {/* Recipes */}
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <BookOpen size={14} />
+                <strong className="text-foreground">
+                  {recipes.length}
+                </strong>{" "}
+                recipes
+              </span>
+              <Link
+                href={`/users/${profile.username}/likes`}
+                className="flex items-center gap-1 hover:text-foreground transition"
+              >
+                <Heart size={14} />
+                <strong className="text-foreground">
+                  {profile._count.likes ?? 0}
+                </strong>{" "}
+                likes
+              </Link>
+              <Link
+                href={`/users/${profile.username}/favorites`}
+                className="flex items-center gap-1 hover:text-foreground transition"
+              >
+                <Star size={14} />
+                <strong className="text-foreground">
+                  {profile._count.favorites ?? 0}
+                </strong>{" "}
+                favorites
+              </Link>
+            </div>
           </div>
         </div>
       </div>
