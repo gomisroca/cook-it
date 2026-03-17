@@ -43,7 +43,12 @@ export default async function EditRecipePage({
           prepTime: recipe.prepTime ?? undefined,
           cookingTime: recipe.cookingTime ?? undefined,
           ingredients: recipe.ingredients,
-          steps: recipe.steps,
+          steps: recipe.steps.map((s) => ({
+            order: s.order,
+            instruction: s.instruction,
+            duration: s.duration ?? undefined,
+            imageUrl: s.imageUrl ?? undefined,
+          })),
           tags: recipe.tags.map((t) => t.name),
         }}
       />
