@@ -18,6 +18,7 @@ export const env = createEnv({
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_UPLOADTHING_CDN: process.env.NEXT_PUBLIC_UPLOADTHING_CDN,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     JWT_SECRET: process.env.JWT_SECRET,
   },
