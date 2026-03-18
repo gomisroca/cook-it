@@ -9,6 +9,8 @@ import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { CollectionEntity } from './entities/collection.entity';
 import slugify from 'slugify';
+import { CursorDto } from '@/common/dto/cursor.dto';
+import { paginateEntities } from '@/common/utils/pagination.util';
 
 @Injectable()
 export class CollectionsService {
@@ -21,6 +23,46 @@ export class CollectionsService {
       slug = `${base}-${suffix++}`;
     }
     return slug;
+  }
+
+  async findPublic(pagination: CursorDto) {
+    return paginateEntities(
+      {
+        model: this.prisma.collection,
+        cursor: pagination.cursor,
+        take: pagination.take || 12,
+        includeTotal: false,
+        query: {
+          where: { isPublic: true },
+          include: {
+            author: true,
+            _count: { select: { recipes: true } },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+      CollectionEntity,
+    );
+  }
+
+  async findMyCollections(userId: string, pagination: CursorDto) {
+    return paginateEntities(
+      {
+        model: this.prisma.collection,
+        cursor: pagination.cursor,
+        take: pagination.take || 12,
+        includeTotal: false,
+        query: {
+          where: { authorId: userId },
+          include: {
+            author: true,
+            _count: { select: { recipes: true } },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+      CollectionEntity,
+    );
   }
 
   async create(userId: string, dto: CreateCollectionDto) {

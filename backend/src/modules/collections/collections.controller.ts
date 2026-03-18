@@ -15,10 +15,21 @@ import { AuthGuard } from '@/common/guards/auth.guard';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { OptionalAuthGuard } from '@/common/guards/optional-auth.guard';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
+import { PaginatedQuery } from '@/common/decorators/paginated-query.decorator';
+import { CursorDto } from '@/common/dto/cursor.dto';
 
 @Controller('collections')
 export class CollectionsController {
   constructor(private readonly collectionsService: CollectionsService) {}
+
+  /**
+   * GET /collections
+   * Get all public collections
+   */
+  @Get()
+  findPublic(@PaginatedQuery() pagination: CursorDto) {
+    return this.collectionsService.findPublic(pagination);
+  }
 
   /**
    * POST /collections
@@ -28,6 +39,19 @@ export class CollectionsController {
   @UseGuards(AuthGuard)
   create(@CurrentUser() user: JwtUser, @Body() dto: CreateCollectionDto) {
     return this.collectionsService.create(user.id, dto);
+  }
+
+  /**
+   * GET /collections/mine
+   * Get all collections created by the user
+   */
+  @Get('mine')
+  @UseGuards(AuthGuard)
+  findMine(
+    @CurrentUser() user: JwtUser,
+    @PaginatedQuery() pagination: CursorDto,
+  ) {
+    return this.collectionsService.findMyCollections(user.id, pagination);
   }
 
   /**
