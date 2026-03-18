@@ -14,6 +14,7 @@ import {
   LogOut,
   User,
   ChefHat,
+  BookMarked,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -81,6 +82,12 @@ export default function Navigation() {
       label: "Browse",
       href: "/recipes",
       icon: ForkKnifeCrossed,
+      section: "Recipes",
+    },
+    {
+      label: "Collections",
+      href: "/collections",
+      icon: BookMarked,
       section: "Recipes",
     },
   ];
