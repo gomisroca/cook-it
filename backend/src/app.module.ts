@@ -9,6 +9,7 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { TagsModule } from './modules/tags/tags.module';
 import { MailModule } from './modules/mail/mail.module';
 import { AppController } from './app.controller';
+import { CollectionsModule } from './modules/collections/collections.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AppController } from './app.controller';
     AuthModule,
     UsersModule,
     RecipesModule,
+    CollectionsModule,
     TagsModule,
     MailModule,
     AppModule,
