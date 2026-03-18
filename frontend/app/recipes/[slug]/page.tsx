@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Pencil } from "lucide-react";
 import DeleteButton from "./delete-btn";
 import { notFound } from "next/navigation";
+import AddToCollection from "@/app/collections/[slug]/add-to-collection";
 
 interface ExpandedRecipe extends Recipe {
   comments: RecipeComment[];
@@ -91,6 +92,7 @@ export default async function RecipePage({
                   initialIsFollowing={recipe.userStatus?.isFollowing ?? false}
                 />
               )}
+              <AddToCollection recipeId={recipe.id} />
             </span>
 
             {/* Stats */}
