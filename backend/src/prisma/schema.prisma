@@ -21,10 +21,11 @@ model User {
   updatedAt DateTime @updatedAt
   role      Role     @default(USER)
 
-  recipes   Recipe[]
-  favorites Favorite[]
-  likes     Like[]
-  comments  Comment[]
+  recipes     Recipe[]
+  favorites   Favorite[]
+  likes       Like[]
+  comments    Comment[]
+  collections Collection[]
 
   following Follow[] @relation("Following")
   followers Follow[] @relation("Followers")
@@ -83,6 +84,7 @@ model Recipe {
   favorites   Favorite[]
   likes       Like[]
   comments    Comment[]
+  collections CollectionRecipe[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -180,4 +182,29 @@ model Comment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// COLLECTIONS
+
+model Collection {
+  id          String             @id @default(cuid())
+  name        String
+  slug        String             @unique
+  description String?
+  isPublic    Boolean            @default(true)
+  authorId    String
+  author      User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  recipes     CollectionRecipe[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model CollectionRecipe {
+  collectionId String
+  recipeId     String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  addedAt      DateTime   @default(now())
+
+  @@id([collectionId, recipeId])
 }
