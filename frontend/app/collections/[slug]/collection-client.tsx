@@ -3,17 +3,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { del, patch } from "@/services/api-client";
+import { del, patch, post } from "@/services/api-client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Lock, Globe, Pencil, Check, X } from "lucide-react";
+import { Trash2, Lock, Globe, Pencil, Check, X, Heart } from "lucide-react";
 import RecipeCard from "@/components/recipe-card";
 import { sileo } from "sileo";
 import Link from "next/link";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Controller, useForm } from "react-hook-form";
+import { UploadButton } from "@uploadthing/react";
+import { UploadThingRouter } from "@/app/api/uploadthing/core";
+import Image from "next/image";
 
 interface CollectionData {
   id: string;
@@ -24,6 +27,9 @@ interface CollectionData {
   author: User;
   recipeCount: number;
   recipes: Recipe[];
+  coverImageUrl?: string;
+  likesCount: number;
+  isLiked: boolean;
 }
 
 interface Props {
@@ -35,6 +41,7 @@ interface EditFormData {
   name: string;
   description?: string;
   isPublic: boolean;
+  coverImageUrl?: string;
 }
 
 export default function CollectionClient({
@@ -43,17 +50,24 @@ export default function CollectionClient({
 }: Props) {
   const router = useRouter();
   const [collection, setCollection] = useState(initial);
+  const [liked, setLiked] = useState(initial.isLiked);
+  const [likesCount, setLikesCount] = useState(initial.likesCount);
+  const [likeLoading, setLikeLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const { register, control, handleSubmit, reset } = useForm<EditFormData>({
-    defaultValues: {
-      name: collection.name,
-      description: collection.description ?? "",
-      isPublic: collection.isPublic,
-    },
-  });
+  const { register, control, handleSubmit, reset, setValue, watch } =
+    useForm<EditFormData>({
+      defaultValues: {
+        name: collection.name,
+        description: collection.description ?? "",
+        isPublic: collection.isPublic,
+        coverImageUrl: collection.coverImageUrl ?? "",
+      },
+    });
+
+  const watchedCoverImageUrl = watch("coverImageUrl");
 
   async function onEditSubmit(data: EditFormData) {
     try {
@@ -99,6 +113,22 @@ export default function CollectionClient({
     }
   }
 
+  async function handleLike() {
+    if (likeLoading) return;
+    const wasLiked = liked;
+    setLiked(!wasLiked);
+    setLikesCount((c) => (wasLiked ? c - 1 : c + 1));
+    setLikeLoading(true);
+    try {
+      await post(`/collections/${collection.slug}/like`);
+    } catch {
+      setLiked(wasLiked);
+      setLikesCount((c) => (wasLiked ? c + 1 : c - 1));
+    } finally {
+      setLikeLoading(false);
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 space-y-8 w-full">
       <div className="space-y-3">
@@ -109,6 +139,37 @@ export default function CollectionClient({
               className="flex-1 space-y-3"
             >
               <FieldSet>
+                <Field>
+                  <FieldLabel>Cover Image</FieldLabel>
+                  <UploadButton<UploadThingRouter, "collectionHeaderImage">
+                    endpoint="collectionHeaderImage"
+                    onClientUploadComplete={(res) => {
+                      if (res?.[0]?.ufsUrl)
+                        setValue("coverImageUrl", res[0].ufsUrl);
+                    }}
+                    appearance={{
+                      button:
+                        "text-xs h-8 px-3 rounded-md bg-primary text-primary-foreground hover:bg-primary/90",
+                      allowedContent: "hidden",
+                      container: "flex flex-col items-start",
+                    }}
+                    content={{
+                      button({ ready }) {
+                        return ready ? "Upload cover image" : "...";
+                      },
+                    }}
+                  />
+                  {watchedCoverImageUrl && (
+                    <div className="relative w-full h-32 rounded-xl overflow-hidden mt-2">
+                      <Image
+                        src={watchedCoverImageUrl}
+                        alt="Cover"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                </Field>
                 <Field>
                   <FieldLabel>Name</FieldLabel>
                   <Input {...register("name")} />
@@ -209,6 +270,22 @@ export default function CollectionClient({
                 {confirming ? "Are you sure?" : "Delete"}
               </Button>
             </div>
+          )}
+          {!isOwner && collection.isPublic && (
+            <button
+              onClick={handleLike}
+              disabled={likeLoading}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition
+                ${
+                  liked
+                    ? "bg-red-50 border-red-200 text-red-500"
+                    : "border-border text-muted-foreground hover:border-red-200 hover:text-red-500"
+                }
+                ${likeLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              <Heart size={14} className={liked ? "fill-red-500" : ""} />
+              {likesCount}
+            </button>
           )}
         </div>
       </div>
