@@ -4,18 +4,6 @@ import { Globe, Lock, BookOpen, Heart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { env } from "@/env";
 
-interface CollectionData {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  coverImageUrl?: string;
-  isPublic: boolean;
-  recipeCount: number;
-  likesCount: number;
-  author: { username: string };
-}
-
 interface Props {
   collection: CollectionData;
   showAuthor?: boolean;

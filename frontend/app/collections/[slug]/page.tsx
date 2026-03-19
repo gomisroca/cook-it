@@ -3,17 +3,6 @@ import { notFound } from "next/navigation";
 import CollectionClient from "./collection-client";
 import { getCurrentUser } from "@/lib/auth";
 
-interface CollectionData {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  isPublic: boolean;
-  author: User;
-  recipeCount: number;
-  recipes: Recipe[];
-}
-
 export default async function CollectionPage({
   params,
 }: {
@@ -22,7 +11,7 @@ export default async function CollectionPage({
   const { slug } = await params;
 
   const [collection, currentUser] = await Promise.all([
-    get<CollectionData>(`/collections/${slug}`).catch(() => null),
+    get<SingleCollectionData>(`/collections/${slug}`).catch(() => null),
     getCurrentUser(),
   ]);
 

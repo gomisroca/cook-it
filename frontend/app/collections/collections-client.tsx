@@ -11,19 +11,6 @@ import { sileo } from "sileo";
 import CollectionCard from "@/components/collection-card";
 import { useRouter } from "next/navigation";
 
-interface CollectionData {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  isPublic: boolean;
-  recipeCount: number;
-  author: { username: string };
-  coverImageUrl?: string;
-  likesCount: number;
-  isLiked: boolean;
-}
-
 interface Props {
   initialPublic: PaginatedResponse<CollectionData>;
   initialMine: PaginatedResponse<CollectionData> | null;

@@ -59,3 +59,21 @@ interface PaginatedResponse<T> {
   cursor?: string;
   total: number;
 }
+
+interface CollectionData {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  isPublic: boolean;
+  recipeCount: number;
+  author: { username: string };
+  coverImageUrl?: string;
+  likesCount: number;
+  isLiked: boolean;
+}
+
+interface SingleCollectionData extends CollectionData {
+  author: User;
+  recipes: Recipe[];
+}

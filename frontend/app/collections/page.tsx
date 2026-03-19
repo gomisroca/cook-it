@@ -2,19 +2,6 @@ import { get } from "@/services/api-server";
 import CollectionsClient from "./collections-client";
 import { getCurrentUser } from "@/lib/auth";
 
-interface CollectionData {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  isPublic: boolean;
-  recipeCount: number;
-  author: { username: string };
-  coverImageUrl?: string;
-  likesCount: number;
-  isLiked: boolean;
-}
-
 export default async function CollectionsPage() {
   const currentUser = await getCurrentUser();
 

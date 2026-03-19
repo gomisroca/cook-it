@@ -18,22 +18,8 @@ import { UploadButton } from "@uploadthing/react";
 import { UploadThingRouter } from "@/app/api/uploadthing/core";
 import Image from "next/image";
 
-interface CollectionData {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  isPublic: boolean;
-  author: User;
-  recipeCount: number;
-  recipes: Recipe[];
-  coverImageUrl?: string;
-  likesCount: number;
-  isLiked: boolean;
-}
-
 interface Props {
-  collection: CollectionData;
+  collection: SingleCollectionData;
   isOwner: boolean;
 }
 
@@ -71,7 +57,7 @@ export default function CollectionClient({
 
   async function onEditSubmit(data: EditFormData) {
     try {
-      const updated = await patch<CollectionData>(
+      const updated = await patch<SingleCollectionData>(
         `/collections/${collection.slug}`,
         data,
       );
