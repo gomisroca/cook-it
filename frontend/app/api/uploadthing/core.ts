@@ -17,6 +17,12 @@ export const UploadThingRouter = {
       return { uploadedBy: metadata.userId, url: file.ufsUrl };
     }),
 
+  collectionHeaderImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
+    .middleware(verifyRequest)
+    .onUploadComplete(async ({ metadata, file }) => {
+      return { uploadedBy: metadata.userId, url: file.ufsUrl };
+    }),
+
   recipeHeaderImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(verifyRequest)
     .onUploadComplete(async ({ metadata, file }) => {
