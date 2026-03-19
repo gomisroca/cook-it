@@ -19,6 +19,9 @@ interface CollectionData {
   isPublic: boolean;
   recipeCount: number;
   author: { username: string };
+  coverImageUrl?: string;
+  likesCount: number;
+  isLiked: boolean;
 }
 
 interface Props {
