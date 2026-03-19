@@ -13,4 +13,8 @@ export class CreateCollectionDto {
   @IsOptional()
   @IsBoolean()
   isPublic?: boolean;
+
+  @IsOptional()
+  @IsString()
+  coverImageUrl?: string;
 }

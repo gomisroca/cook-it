@@ -27,8 +27,12 @@ export class CollectionsController {
    * Get all public collections
    */
   @Get()
-  findPublic(@PaginatedQuery() pagination: CursorDto) {
-    return this.collectionsService.findPublic(pagination);
+  @UseGuards(OptionalAuthGuard)
+  findPublic(
+    @PaginatedQuery() pagination: CursorDto,
+    @CurrentUser() user?: JwtUser,
+  ) {
+    return this.collectionsService.findPublic(pagination, user?.id);
   }
 
   /**
@@ -102,6 +106,15 @@ export class CollectionsController {
     @Body() dto: UpdateCollectionDto,
   ) {
     return this.collectionsService.update(user.id, slug, dto);
+  }
+  /**
+   * POST /collections/:slug/like
+   * Toggle like on a collection
+   */
+  @Post(':slug/like')
+  @UseGuards(AuthGuard)
+  toggleLike(@CurrentUser() user: JwtUser, @Param('slug') slug: string) {
+    return this.collectionsService.toggleLike(user.id, slug);
   }
 
   /**

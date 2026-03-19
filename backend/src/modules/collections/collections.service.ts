@@ -25,7 +25,7 @@ export class CollectionsService {
     return slug;
   }
 
-  async findPublic(pagination: CursorDto) {
+  async findPublic(pagination: CursorDto, requesterId?: string) {
     return paginateEntities(
       {
         model: this.prisma.collection,
@@ -36,10 +36,16 @@ export class CollectionsService {
           where: { isPublic: true },
           include: {
             author: true,
-            _count: { select: { recipes: true } },
+            _count: { select: { recipes: true, likes: true } },
+            ...(requesterId && {
+              likes: {
+                where: { userId: requesterId },
+                select: { userId: true },
+              },
+            }),
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { likes: { _count: 'desc' } },
       },
       CollectionEntity,
     );
@@ -56,7 +62,7 @@ export class CollectionsService {
           where: { authorId: userId },
           include: {
             author: true,
-            _count: { select: { recipes: true } },
+            _count: { select: { recipes: true, likes: true } },
           },
         },
         orderBy: { createdAt: 'desc' },
@@ -160,6 +166,10 @@ export class CollectionsService {
       where: { slug },
       include: {
         author: true,
+        _count: { select: { recipes: true, likes: true } },
+        ...(requesterId && {
+          likes: { where: { userId: requesterId }, select: { userId: true } },
+        }),
         recipes: {
           orderBy: { addedAt: 'desc' },
           include: {
@@ -183,6 +193,30 @@ export class CollectionsService {
     }
 
     return new CollectionEntity(collection);
+  }
+
+  async toggleLike(userId: string, slug: string) {
+    const collection = await this.prisma.collection.findUnique({
+      where: { slug },
+    });
+    if (!collection) throw new NotFoundException('Collection not found');
+    if (!collection.isPublic) throw new ForbiddenException();
+
+    const existing = await this.prisma.collectionLike.findUnique({
+      where: { userId_collectionId: { userId, collectionId: collection.id } },
+    });
+
+    if (existing) {
+      await this.prisma.collectionLike.delete({
+        where: { userId_collectionId: { userId, collectionId: collection.id } },
+      });
+      return { liked: false };
+    }
+
+    await this.prisma.collectionLike.create({
+      data: { userId, collectionId: collection.id },
+    });
+    return { liked: true };
   }
 
   async addRecipe(userId: string, slug: string, recipeId: string) {
