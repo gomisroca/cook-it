@@ -50,4 +50,8 @@ export class QueryRecipesDto {
   @Min(0)
   @Type(() => Number)
   maxPrepTime?: number;
+
+  @IsOptional()
+  @IsEnum(['createdAt', 'likes', 'favorites', 'totalTime'])
+  orderBy?: 'createdAt' | 'likes' | 'favorites' | 'totalTime';
 }

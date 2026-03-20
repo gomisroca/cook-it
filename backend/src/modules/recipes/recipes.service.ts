@@ -107,6 +107,14 @@ export class RecipesService {
 
   async findAll(query: QueryRecipesDto, pagination: CursorDto) {
     const { cursor, take } = pagination;
+    const orderByMap = {
+      createdAt: { createdAt: 'desc' },
+      likes: { likes: { _count: 'desc' } },
+      favorites: { favorites: { _count: 'desc' } },
+      totalTime: [{ cookingTime: 'asc' }, { prepTime: 'asc' }],
+    };
+
+    const orderBy = orderByMap[query.orderBy ?? 'createdAt'];
 
     return paginateEntities(
       {
@@ -114,7 +122,7 @@ export class RecipesService {
         cursor,
         take: take || 10,
         includeTotal: true,
-
+        orderBy,
         query: {
           where: {
             isPublic: query.isPublic,
@@ -152,10 +160,6 @@ export class RecipesService {
               select: { likes: true, favorites: true, comments: true },
             },
           },
-        },
-
-        orderBy: {
-          createdAt: 'desc',
         },
       },
       RecipeEntity,
