@@ -14,6 +14,7 @@ export interface RecipeFilters {
   maxPrepTime?: number;
   ingredients: string[];
   tags: string[];
+  orderBy?: "createdAt" | "likes" | "favorites" | "totalTime";
 }
 
 export const defaultFilters: RecipeFilters = {
@@ -27,6 +28,12 @@ interface Props {
 }
 
 const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
+const ORDER_OPTIONS = [
+  { value: "createdAt", label: "Newest" },
+  { value: "likes", label: "Most liked" },
+  { value: "favorites", label: "Most favorited" },
+  { value: "totalTime", label: "Quickest" },
+] as const;
 
 export function RecipeFilters({ filters, onChange }: Props) {
   const [open, setOpen] = useState(false);
@@ -35,6 +42,9 @@ export function RecipeFilters({ filters, onChange }: Props) {
     filters.difficulty,
     filters.maxCookingTime,
     filters.maxPrepTime,
+    filters.orderBy !== undefined && filters.orderBy !== "createdAt"
+      ? filters.orderBy
+      : undefined,
     ...(filters.ingredients ?? []),
     ...(filters.tags ?? []),
   ].filter(Boolean).length;
@@ -62,6 +72,28 @@ export function RecipeFilters({ filters, onChange }: Props) {
 
       {open && (
         <div className="px-5 pb-5 space-y-5 border-t pt-4">
+          {/* Order */}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Sort by
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {ORDER_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => update({ orderBy: option.value })}
+                  className={`px-3 py-1 rounded-full text-xs font-medium border transition
+          ${
+            (filters.orderBy ?? "createdAt") === option.value
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-muted text-muted-foreground border-transparent hover:border-primary"
+          }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
           {/* Difficulty */}
           <div className="space-y-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">

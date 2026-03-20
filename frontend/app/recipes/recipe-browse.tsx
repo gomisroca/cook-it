@@ -18,6 +18,7 @@ interface Props {
 function buildQuery(filters: RecipeFilters, cursor?: string) {
   const params = new URLSearchParams();
   if (filters.search) params.set("search", filters.search);
+  if (filters.orderBy) params.set("orderBy", filters.orderBy);
   if (filters.difficulty) params.set("difficulty", filters.difficulty);
   if (filters.maxCookingTime)
     params.set("maxCookingTime", String(filters.maxCookingTime));
