@@ -25,6 +25,12 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import FormError from "@/components/ui/form-error";
+import { KeyRound } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface ProfileData {
   id: string;
@@ -46,6 +52,19 @@ interface Props {
   isOwnProfile: boolean;
 }
 
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type ChangePasswordData = z.infer<typeof changePasswordSchema>;
+
 export default function ProfileClient({ profile, isOwnProfile }: Props) {
   const { setUser } = useAuth();
   const [editing, setEditing] = useState(false);
@@ -57,8 +76,38 @@ export default function ProfileClient({ profile, isOwnProfile }: Props) {
   const [cursor, setCursor] = useState<string | undefined>(
     profile.recipes.cursor,
   );
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
   const [recipesLoading, setRecipesLoading] = useState(false);
+
   const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  const passwordForm = useForm<ChangePasswordData>({
+    resolver: zodResolver(changePasswordSchema),
+  });
+
+  async function handleChangePassword(data: ChangePasswordData) {
+    setPasswordLoading(true);
+    try {
+      await patch("/users/me/password", {
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      });
+      sileo.success({ title: "Password changed successfully!" });
+      setChangingPassword(false);
+      passwordForm.reset();
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === "object" && err !== null && "message" in err
+            ? String((err as { message: unknown }).message)
+            : "Failed to change password";
+      passwordForm.setError("currentPassword", { message });
+    } finally {
+      setPasswordLoading(false);
+    }
+  }
 
   const loadMore = useCallback(async () => {
     if (!cursor || recipesLoading) return;
@@ -256,6 +305,98 @@ export default function ProfileClient({ profile, isOwnProfile }: Props) {
       </div>
 
       <Separator />
+      {isOwnProfile && (
+        <>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Security</h2>
+              {!changingPassword && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setChangingPassword(true)}
+                  className="gap-1"
+                >
+                  <KeyRound size={14} /> Change password
+                </Button>
+              )}
+            </div>
+
+            {changingPassword && (
+              <form
+                onSubmit={(e) => e.preventDefault()}
+                className="border rounded-xl p-4 space-y-4 max-w-md"
+              >
+                <FieldSet>
+                  <Field>
+                    <FieldLabel>Current password</FieldLabel>
+                    <Input
+                      type="password"
+                      {...passwordForm.register("currentPassword")}
+                    />
+                    {passwordForm.formState.errors.currentPassword && (
+                      <FormError>
+                        {passwordForm.formState.errors.currentPassword.message}
+                      </FormError>
+                    )}
+                  </Field>
+                  <Field>
+                    <FieldLabel>New password</FieldLabel>
+                    <Input
+                      type="password"
+                      {...passwordForm.register("newPassword")}
+                    />
+                    {passwordForm.formState.errors.newPassword && (
+                      <FormError>
+                        {passwordForm.formState.errors.newPassword.message}
+                      </FormError>
+                    )}
+                  </Field>
+                  <Field>
+                    <FieldLabel>Confirm new password</FieldLabel>
+                    <Input
+                      type="password"
+                      {...passwordForm.register("confirmPassword")}
+                    />
+                    {passwordForm.formState.errors.confirmPassword && (
+                      <FormError>
+                        {passwordForm.formState.errors.confirmPassword.message}
+                      </FormError>
+                    )}
+                  </Field>
+                </FieldSet>
+
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={passwordForm.handleSubmit(handleChangePassword)}
+                    disabled={passwordLoading}
+                    className="gap-1"
+                  >
+                    <Check size={14} />
+                    {passwordLoading ? "Saving..." : "Save"}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setChangingPassword(false);
+                      passwordForm.reset();
+                    }}
+                    className="gap-1"
+                  >
+                    <X size={14} /> Cancel
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          <Separator />
+        </>
+      )}
 
       {/* Recipes */}
       <div className="space-y-4">

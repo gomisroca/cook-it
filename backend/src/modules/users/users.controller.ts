@@ -17,6 +17,7 @@ import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { JwtUser } from '../auth/jwt.interface';
 import { AuthGuard } from '@/common/guards/auth.guard';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -42,6 +43,16 @@ export class UsersController {
   @UseGuards(AuthGuard)
   async updateMe(@CurrentUser() user: JwtUser, @Body() dto: UpdateProfileDto) {
     return this.usersService.updateMe(user.id, dto);
+  }
+
+  /**
+   * PATCH /users/me/password
+   * Change user password
+   */
+  @Patch('me/password')
+  @UseGuards(AuthGuard)
+  changePassword(@CurrentUser() user: JwtUser, @Body() dto: ChangePasswordDto) {
+    return this.usersService.changePassword(user.id, dto);
   }
 
   /**

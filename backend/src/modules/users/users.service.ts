@@ -1,10 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { paginateEntities } from '@/common/utils/pagination.util';
 import { UserEntity } from './entities/user.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CursorDto } from '@/common/dto/cursor.dto';
 import { RecipeEntity } from '../recipes/entities/recipe.entity';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -183,5 +189,33 @@ export class UsersService {
     });
 
     return user;
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    // Google-only users have no password
+    if (!user.password) {
+      throw new BadRequestException(
+        'This account uses Google sign-in and has no password to change',
+      );
+    }
+
+    const isValid = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!isValid)
+      throw new BadRequestException('Current password is incorrect');
+
+    const hashed = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashed },
+    });
+
+    return { message: 'Password changed successfully' };
   }
 }
