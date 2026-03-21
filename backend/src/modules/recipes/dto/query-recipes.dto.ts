@@ -8,7 +8,7 @@ import {
   IsArray,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { Difficulty } from '@/generated/prisma/enums';
+import { Cuisine, Difficulty, MealType } from '@/generated/prisma/enums';
 
 export class QueryRecipesDto {
   @IsOptional()
@@ -22,6 +22,14 @@ export class QueryRecipesDto {
   @IsOptional()
   @IsEnum(Difficulty)
   difficulty?: Difficulty;
+
+  @IsOptional()
+  @IsEnum(Cuisine)
+  cuisine?: Cuisine;
+
+  @IsOptional()
+  @IsEnum(MealType)
+  mealType?: MealType;
 
   @IsOptional()
   @IsArray()

@@ -8,7 +8,7 @@ import {
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Difficulty } from '@/generated/prisma/enums';
+import { Cuisine, Difficulty, MealType } from '@/generated/prisma/enums';
 import { CreateIngredientDto } from './create-ingredient.dto';
 import { CreateStepDto } from './create-step.dto';
 
@@ -34,6 +34,14 @@ export class CreateRecipeDto {
   @IsOptional()
   @IsEnum(Difficulty)
   difficulty?: Difficulty;
+
+  @IsOptional()
+  @IsEnum(Cuisine)
+  cuisine?: Cuisine;
+
+  @IsOptional()
+  @IsEnum(MealType)
+  mealType?: MealType;
 
   @IsOptional()
   @IsInt()
