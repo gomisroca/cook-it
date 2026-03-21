@@ -1,0 +1,9 @@
+-- CreateEnum
+CREATE TYPE "Cuisine" AS ENUM ('ITALIAN', 'ASIAN', 'MEXICAN', 'FRENCH', 'AMERICAN', 'MEDITERRANEAN', 'INDIAN', 'JAPANESE', 'CHINESE', 'THAI', 'GREEK', 'SPANISH', 'MIDDLE_EASTERN', 'OTHER');
+
+-- CreateEnum
+CREATE TYPE "MealType" AS ENUM ('BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'DESSERT', 'APPETIZER', 'DRINK');
+
+-- AlterTable
+ALTER TABLE "Recipe" ADD COLUMN     "cuisine" "Cuisine",
+ADD COLUMN     "mealType" "MealType";
