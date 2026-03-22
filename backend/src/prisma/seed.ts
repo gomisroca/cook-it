@@ -1,4 +1,9 @@
-import { Difficulty, PrismaClient } from '@/generated/prisma/client';
+import {
+  Cuisine,
+  Difficulty,
+  MealType,
+  PrismaClient,
+} from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcrypt';
 import slugify from 'slugify';
@@ -122,6 +127,8 @@ async function main() {
       prepTime: 10,
       cookingTime: 20,
       difficulty: Difficulty.MEDIUM,
+      cuisine: Cuisine.ITALIAN,
+      mealType: MealType.DINNER,
       servings: 4,
       isPublic: true,
       authorId: alice.id,
@@ -190,6 +197,8 @@ async function main() {
       prepTime: 5,
       cookingTime: 10,
       difficulty: Difficulty.EASY,
+      cuisine: Cuisine.ASIAN,
+      mealType: MealType.DINNER,
       servings: 2,
       isPublic: true,
       authorId: alice.id,
@@ -256,6 +265,8 @@ async function main() {
       prepTime: 10,
       cookingTime: 0,
       difficulty: Difficulty.EASY,
+      cuisine: Cuisine.OTHER,
+      mealType: MealType.BREAKFAST,
       servings: 1,
       isPublic: true,
       authorId: bob.id,
@@ -307,6 +318,8 @@ async function main() {
       prepTime: 5,
       cookingTime: 8,
       difficulty: Difficulty.EASY,
+      cuisine: Cuisine.AMERICAN,
+      mealType: MealType.LUNCH,
       servings: 1,
       isPublic: true,
       authorId: bob.id,
@@ -364,6 +377,8 @@ async function main() {
       prepTime: 20,
       cookingTime: 0,
       difficulty: Difficulty.MEDIUM,
+      cuisine: Cuisine.FRENCH,
+      mealType: MealType.DESSERT,
       servings: 4,
       isPublic: true,
       authorId: carol.id,
@@ -477,6 +492,8 @@ async function main() {
       prepTime: 10,
       cookingTime: 20,
       difficulty: Difficulty.EASY,
+      cuisine: Cuisine.AMERICAN,
+      mealType: MealType.BREAKFAST,
       servings: 4,
       isPublic: true,
       authorId: dave.id,
