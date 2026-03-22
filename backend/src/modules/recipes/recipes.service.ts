@@ -127,6 +127,8 @@ export class RecipesService {
           where: {
             isPublic: query.isPublic,
             ...(query.difficulty && { difficulty: query.difficulty }),
+            ...(query.cuisine && { cuisine: query.cuisine }),
+            ...(query.mealType && { mealType: query.mealType }),
             ...(query.maxCookingTime && {
               cookingTime: { lte: query.maxCookingTime },
             }),
