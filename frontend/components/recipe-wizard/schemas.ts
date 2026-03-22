@@ -12,6 +12,35 @@ export const recipeSchema = z.object({
   difficulty: z.enum(["EASY", "MEDIUM", "HARD"], {
     error: "Please select a difficulty",
   }),
+  cuisine: z
+    .enum([
+      "ITALIAN",
+      "ASIAN",
+      "MEXICAN",
+      "FRENCH",
+      "AMERICAN",
+      "MEDITERRANEAN",
+      "INDIAN",
+      "JAPANESE",
+      "CHINESE",
+      "THAI",
+      "GREEK",
+      "SPANISH",
+      "MIDDLE_EASTERN",
+      "OTHER",
+    ])
+    .optional(),
+  mealType: z
+    .enum([
+      "BREAKFAST",
+      "LUNCH",
+      "DINNER",
+      "SNACK",
+      "DESSERT",
+      "APPETIZER",
+      "DRINK",
+    ])
+    .optional(),
   isPublic: z.boolean(),
   servings: optionalNumber,
   prepTime: optionalNumber,

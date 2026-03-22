@@ -10,6 +10,9 @@ interface Props {
   form: UseFormReturn<RecipeFormData>;
 }
 
+const selectClassName =
+  "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]";
+
 export function BasicInfoStep({ form }: Props) {
   const {
     register,
@@ -61,6 +64,40 @@ export function BasicInfoStep({ form }: Props) {
           {errors.difficulty && (
             <FormError>{errors.difficulty.message}</FormError>
           )}
+        </Field>
+        <Field>
+          <FieldLabel>Cuisine</FieldLabel>
+          <select {...register("cuisine")} className={cn(selectClassName)}>
+            <option value="">Select cuisine</option>
+            <option value="ITALIAN">Italian</option>
+            <option value="ASIAN">Asian</option>
+            <option value="MEXICAN">Mexican</option>
+            <option value="FRENCH">French</option>
+            <option value="AMERICAN">American</option>
+            <option value="MEDITERRANEAN">Mediterranean</option>
+            <option value="INDIAN">Indian</option>
+            <option value="JAPANESE">Japanese</option>
+            <option value="CHINESE">Chinese</option>
+            <option value="THAI">Thai</option>
+            <option value="GREEK">Greek</option>
+            <option value="SPANISH">Spanish</option>
+            <option value="MIDDLE_EASTERN">Middle Eastern</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </Field>
+
+        <Field>
+          <FieldLabel>Meal Type</FieldLabel>
+          <select {...register("mealType")} className={cn(selectClassName)}>
+            <option value="">Select meal type</option>
+            <option value="BREAKFAST">Breakfast</option>
+            <option value="LUNCH">Lunch</option>
+            <option value="DINNER">Dinner</option>
+            <option value="SNACK">Snack</option>
+            <option value="DESSERT">Dessert</option>
+            <option value="APPETIZER">Appetizer</option>
+            <option value="DRINK">Drink</option>
+          </select>
         </Field>
       </FieldSet>
 

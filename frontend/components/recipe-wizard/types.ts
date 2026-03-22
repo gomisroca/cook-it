@@ -9,6 +9,8 @@ export const defaultValues: RecipeFormData = {
   isPublic: true,
   coverImageUrl: "",
   difficulty: "EASY",
+  cuisine: undefined,
+  mealType: undefined,
   servings: undefined,
   prepTime: undefined,
   cookingTime: undefined,
