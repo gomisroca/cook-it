@@ -20,6 +20,8 @@ function buildQuery(filters: RecipeFilters, cursor?: string) {
   if (filters.search) params.set("search", filters.search);
   if (filters.orderBy) params.set("orderBy", filters.orderBy);
   if (filters.difficulty) params.set("difficulty", filters.difficulty);
+  if (filters.cuisine) params.set("cuisine", filters.cuisine);
+  if (filters.mealType) params.set("mealType", filters.mealType);
   if (filters.maxCookingTime)
     params.set("maxCookingTime", String(filters.maxCookingTime));
   if (filters.maxPrepTime)

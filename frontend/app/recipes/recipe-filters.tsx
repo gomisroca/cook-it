@@ -10,6 +10,8 @@ import { IngredientAutocomplete } from "@/app/recipes/ingredient-autocomplete";
 export interface RecipeFilters {
   search?: string;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
+  cuisine?: string;
+  mealType?: string;
   maxCookingTime?: number;
   maxPrepTime?: number;
   ingredients: string[];
@@ -40,6 +42,8 @@ export function RecipeFilters({ filters, onChange }: Props) {
 
   const activeCount = [
     filters.difficulty,
+    filters.cuisine,
+    filters.mealType,
     filters.maxCookingTime,
     filters.maxPrepTime,
     filters.orderBy !== undefined && filters.orderBy !== "createdAt"
@@ -116,6 +120,79 @@ export function RecipeFilters({ filters, onChange }: Props) {
                     }`}
                 >
                   {d.charAt(0) + d.slice(1).toLowerCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cuisine */}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Cuisine
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                "ITALIAN",
+                "ASIAN",
+                "MEXICAN",
+                "FRENCH",
+                "AMERICAN",
+                "MEDITERRANEAN",
+                "INDIAN",
+                "JAPANESE",
+                "CHINESE",
+                "THAI",
+                "GREEK",
+                "SPANISH",
+                "MIDDLE_EASTERN",
+                "OTHER",
+              ].map((c) => (
+                <button
+                  key={c}
+                  onClick={() =>
+                    update({ cuisine: filters.cuisine === c ? undefined : c })
+                  }
+                  className={`px-3 py-1 rounded-full text-xs font-medium border transition
+          ${
+            filters.cuisine === c
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-muted text-muted-foreground border-transparent hover:border-primary"
+          }`}
+                >
+                  {c.charAt(0) + c.slice(1).toLowerCase().replace("_", " ")}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Meal Type */}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Meal Type
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                "BREAKFAST",
+                "LUNCH",
+                "DINNER",
+                "SNACK",
+                "DESSERT",
+                "APPETIZER",
+                "DRINK",
+              ].map((m) => (
+                <button
+                  key={m}
+                  onClick={() =>
+                    update({ mealType: filters.mealType === m ? undefined : m })
+                  }
+                  className={`px-3 py-1 rounded-full text-xs font-medium border transition
+          ${
+            filters.mealType === m
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-muted text-muted-foreground border-transparent hover:border-primary"
+          }`}
+                >
+                  {m.charAt(0) + m.slice(1).toLowerCase()}
                 </button>
               ))}
             </div>
