@@ -1,6 +1,7 @@
 import { env } from "@/env";
 import Image from "next/image";
 import Link from "next/link";
+import { CUISINE_LABELS, MEAL_TYPE_LABELS } from "@/lib/recipe-labels";
 
 export default function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
@@ -35,16 +36,30 @@ export default function RecipeCard({ recipe }: { recipe: Recipe }) {
             ⭐ {recipe.favoritesCount}
           </span>
         </div>
+
+        {/* Cuisine & Meal Type badges on image */}
+        {(recipe.cuisine || recipe.mealType) && (
+          <div className="absolute bottom-3 left-3 flex gap-1.5">
+            {recipe.cuisine && (
+              <span className="rounded-full bg-black/50 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-md">
+                {CUISINE_LABELS[recipe.cuisine] ?? recipe.cuisine}
+              </span>
+            )}
+            {recipe.mealType && (
+              <span className="rounded-full bg-black/50 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-md">
+                {MEAL_TYPE_LABELS[recipe.mealType] ?? recipe.mealType}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="p-5 space-y-3">
         <div className="space-y-1">
-          {/* Title */}
           <h2 className="text-lg font-semibold group-hover:underline">
             {recipe.title}
           </h2>
 
-          {/* Prep & Cooking Time */}
           {(recipe.prepTime || recipe.cookingTime) && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>⏱</span>
@@ -55,12 +70,10 @@ export default function RecipeCard({ recipe }: { recipe: Recipe }) {
           )}
         </div>
 
-        {/* Description */}
         <p className="text-sm text-muted-foreground line-clamp-2">
           {recipe.description}
         </p>
 
-        {/* Tag Badges */}
         <div className="flex flex-wrap gap-2">
           {recipe.tags?.slice(0, 3).map((tag) => (
             <span

@@ -16,6 +16,7 @@ import { Pencil } from "lucide-react";
 import DeleteButton from "./delete-btn";
 import { notFound } from "next/navigation";
 import AddToCollection from "@/app/collections/[slug]/add-to-collection";
+import { CUISINE_LABELS, MEAL_TYPE_LABELS } from "@/lib/recipe-labels";
 
 interface ExpandedRecipe extends Recipe {
   comments: RecipeComment[];
@@ -105,8 +106,18 @@ export default async function RecipePage({
               initiallyFavorited={recipe.userStatus?.isFavorited ?? false}
             />
 
-            {/* Tags */}
+            {/* Tags + Metadata */}
             <div className="flex flex-wrap gap-2 pt-2">
+              {recipe.cuisine && (
+                <Badge variant="outline">
+                  {CUISINE_LABELS[recipe.cuisine] ?? recipe.cuisine}
+                </Badge>
+              )}
+              {recipe.mealType && (
+                <Badge variant="outline">
+                  {MEAL_TYPE_LABELS[recipe.mealType] ?? recipe.mealType}
+                </Badge>
+              )}
               {recipe.tags.map((tag) => (
                 <Badge key={tag.id} variant="secondary">
                   {tag.name}
