@@ -11,6 +11,7 @@ import { CursorDto } from '@/common/dto/cursor.dto';
 import { RecipeEntity } from '../recipes/entities/recipe.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import bcrypt from 'bcrypt';
+import { CollectionEntity } from '../collections/entities/collection.entity';
 
 @Injectable()
 export class UsersService {
@@ -32,7 +33,14 @@ export class UsersService {
     );
   }
 
-  async getProfile(username: string, pagination: CursorDto) {
+  async getProfile(
+    username: string,
+    pagination: {
+      recipesCursor?: string;
+      collectionsCursor?: string;
+      take?: number;
+    },
+  ) {
     const user = await this.prisma.user.findUnique({
       where: { username },
       select: {
@@ -54,28 +62,47 @@ export class UsersService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    const recipes = await paginateEntities(
-      {
-        model: this.prisma.recipe,
-        cursor: pagination.cursor,
-        take: pagination.take || 9,
-        includeTotal: false,
-        query: {
-          where: { authorId: user.id, isPublic: true },
-          include: {
-            tags: { include: { tag: true } },
-            author: true,
-            _count: {
-              select: { likes: true, favorites: true, comments: true },
+    const [recipes, collections] = await Promise.all([
+      paginateEntities(
+        {
+          model: this.prisma.recipe,
+          cursor: pagination.recipesCursor,
+          take: pagination.take || 9,
+          includeTotal: false,
+          query: {
+            where: { authorId: user.id, isPublic: true },
+            include: {
+              tags: { include: { tag: true } },
+              author: true,
+              _count: {
+                select: { likes: true, favorites: true, comments: true },
+              },
             },
           },
+          orderBy: { createdAt: 'desc' },
         },
-        orderBy: { createdAt: 'desc' },
-      },
-      RecipeEntity,
-    );
+        RecipeEntity,
+      ),
+      paginateEntities(
+        {
+          model: this.prisma.collection,
+          cursor: pagination.collectionsCursor,
+          take: pagination.take || 9,
+          includeTotal: false,
+          query: {
+            where: { authorId: user.id, isPublic: true },
+            include: {
+              author: true,
+              _count: { select: { likes: true, recipes: true } },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+        CollectionEntity,
+      ),
+    ]);
 
-    return { ...user, recipes };
+    return { ...user, recipes, collections };
   }
 
   async getUserRecipes(username: string, pagination: CursorDto) {

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -62,9 +63,15 @@ export class UsersController {
   @Get(':username')
   async getProfile(
     @Param('username') username: string,
-    @PaginatedQuery() pagination: CursorDto,
+    @Query('recipesCursor') recipesCursor?: string,
+    @Query('collectionsCursor') collectionsCursor?: string,
+    @Query('take') take?: number,
   ) {
-    return this.usersService.getProfile(username, pagination);
+    return this.usersService.getProfile(username, {
+      recipesCursor,
+      collectionsCursor,
+      take,
+    });
   }
 
   /**
