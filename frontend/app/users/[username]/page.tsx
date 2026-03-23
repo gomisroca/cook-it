@@ -25,14 +25,22 @@ interface Props {
 export default async function ProfilePage({ params }: Props) {
   const { username } = await params;
 
-  const [profile, currentUser] = await Promise.all([
+  const [profile, currentUser, collections] = await Promise.all([
     get<ProfileData>(`/users/${username}`).catch(() => null),
     getCurrentUser(),
+    get<PaginatedResponse<CollectionData>>(
+      `/collections/user/${username}`,
+    ).catch(() => ({ data: [], cursor: undefined, total: 0 })),
   ]);
-
   if (!profile) notFound();
 
   const isOwnProfile = currentUser?.id === profile.id;
 
-  return <ProfileClient profile={profile} isOwnProfile={isOwnProfile} />;
+  return (
+    <ProfileClient
+      profile={profile}
+      isOwnProfile={isOwnProfile}
+      initialCollections={collections}
+    />
+  );
 }
