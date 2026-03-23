@@ -33,26 +33,11 @@ import FormError from "@/components/ui/form-error";
 import { KeyRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import CollectionCard from "@/components/collection-card";
-
-interface ProfileData {
-  id: string;
-  username: string;
-  bio?: string;
-  avatarUrl?: string;
-  createdAt: string;
-  _count: {
-    followers: number;
-    following: number;
-    likes: number;
-    favorites: number;
-  };
-  recipes: PaginatedResponse<Recipe>;
-}
+import { ProfileData } from "./page";
 
 interface Props {
   profile: ProfileData;
   isOwnProfile: boolean;
-  initialCollections: PaginatedResponse<CollectionData>;
 }
 
 const changePasswordSchema = z
@@ -68,11 +53,7 @@ const changePasswordSchema = z
 
 type ChangePasswordData = z.infer<typeof changePasswordSchema>;
 
-export default function ProfileClient({
-  profile,
-  isOwnProfile,
-  initialCollections,
-}: Props) {
+export default function ProfileClient({ profile, isOwnProfile }: Props) {
   const { setUser } = useAuth();
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState(profile.bio ?? "");
@@ -90,13 +71,14 @@ export default function ProfileClient({
   const [recipesLoading, setRecipesLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const loadMore = useCallback(async () => {
+  const loadMoreRecipes = useCallback(async () => {
     if (!cursor || recipesLoading) return;
     setRecipesLoading(true);
     try {
       const res = await get<PaginatedResponse<Recipe>>(
-        `/users/${profile.username}/recipes?cursor=${cursor}`,
+        `/users/${profile.username}?recipesCursor=${cursor}`,
       );
+
       setRecipes((prev) => [...prev, ...res.data]);
       setCursor(res.cursor);
     } finally {
@@ -107,18 +89,18 @@ export default function ProfileClient({
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) loadMore();
+        if (entries[0].isIntersecting) loadMoreRecipes();
       },
       { threshold: 0.8 },
     );
     if (loaderRef.current) observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [loadMore]);
+  }, [loadMoreRecipes]);
 
   // Collections
-  const [collections, setCollections] = useState(initialCollections.data);
+  const [collections, setCollections] = useState(profile.collections.data);
   const [collectionsCursor, setCollectionsCursor] = useState(
-    initialCollections.cursor,
+    profile.collections.cursor,
   );
   const [collectionsLoading, setCollectionsLoading] = useState(false);
   const collectionsLoaderRef = useRef<HTMLDivElement | null>(null);
@@ -128,8 +110,9 @@ export default function ProfileClient({
     setCollectionsLoading(true);
     try {
       const res = await get<PaginatedResponse<CollectionData>>(
-        `/collections/user/${profile.username}?cursor=${collectionsCursor}`,
+        `/users/${profile.username}?collectionsCursor=${collectionsCursor}`,
       );
+
       setCollections((prev) => [...prev, ...res.data]);
       setCollectionsCursor(res.cursor);
     } finally {
