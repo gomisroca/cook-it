@@ -7,10 +7,27 @@ import { UploadThingRouter } from "@/app/api/uploadthing/core";
 import { Toaster } from "sileo";
 import Navigation from "@/components/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { env } from "@/env";
 
 export const metadata: Metadata = {
-  title: "Cook It!",
+  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  title: {
+    default: "Cook It!",
+    template: "%s | Cook It!",
+  },
   description: "The world's recipes, at your fingertips.",
+  openGraph: {
+    title: "Cook It!",
+    description: "The world's recipes, at your fingertips.",
+    images: [{ url: "/og-default.jpg", width: 1200, height: 630 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cook It!",
+    description: "The world's recipes, at your fingertips.",
+    images: ["/og-default.jpg"],
+  },
 };
 
 export default async function RootLayout({

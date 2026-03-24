@@ -13,12 +13,14 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_UPLOADTHING_CDN: z.string(),
     NEXT_PUBLIC_API_URL: z.url().default("http://localhost:3001"),
+    NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
   },
 
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_UPLOADTHING_CDN: process.env.NEXT_PUBLIC_UPLOADTHING_CDN,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     JWT_SECRET: process.env.JWT_SECRET,
   },

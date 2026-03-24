@@ -17,6 +17,8 @@ import DeleteButton from "./delete-btn";
 import { notFound } from "next/navigation";
 import AddToCollection from "@/app/collections/[slug]/add-to-collection";
 import { CUISINE_LABELS, MEAL_TYPE_LABELS } from "@/lib/recipe-labels";
+import type { Metadata } from "next";
+import { cache } from "react";
 
 interface ExpandedRecipe extends Recipe {
   comments: RecipeComment[];
@@ -37,20 +39,56 @@ function EditButton({ slug }: { slug: string }) {
   );
 }
 
+const getRecipe = cache(async (slug: string) => {
+  return get<ExpandedRecipe>(`/recipes/${slug}`).catch(() => null);
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+
+  const recipe = await getRecipe(slug);
+  if (!recipe) return { title: "Recipe not found" };
+
+  const description = recipe.description?.slice(0, 160) ?? "No description";
+  const image = recipe.coverImageUrl ?? "/placeholder-recipe.jpg";
+
+  return {
+    title: `${recipe.title} | Cook It!`,
+    description,
+    openGraph: {
+      title: recipe.title,
+      description,
+      images: [{ url: image, width: 1200, height: 630, alt: recipe.title }],
+      type: "article",
+      authors: [recipe.author.username],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: recipe.title,
+      description,
+      images: [image],
+    },
+  };
+}
+
 export default async function RecipePage({
   params,
 }: {
-  params: Promise<{ [key: string]: string | string[] | undefined }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const slug = (await params).slug;
-  const user = await getCurrentUser();
+  const { slug } = await params;
+  const [recipe, currentUser] = await Promise.all([
+    getRecipe(slug),
+    getCurrentUser(),
+  ]);
 
-  const recipe = await get<ExpandedRecipe>(`/recipes/${slug}`).catch(
-    () => null,
-  );
   if (!recipe) notFound();
 
-  const isAuthor = user?.id === recipe.author.id;
+  const isAuthor = currentUser?.id === recipe.author.id;
 
   return (
     <div className="min-h-screen bg-muted/40">
